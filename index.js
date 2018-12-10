@@ -19,8 +19,8 @@ function init() {
   scene.add(camera);
 
   // on créé un cube au quel on définie un matériau puis on l'ajoute à la scène
-  const geometry = new THREE.SphereGeometry(200, 32, 32);
-  const material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('metal.jpg', new THREE.SphericalReflectionMapping()), overdraw: true });
+  const geometry = new THREE.CubeGeometry(200, 200, 200);
+  const material = new THREE.MeshBasicMaterial({ color: Oxff0000, wireframe: true });
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   // on ajoute une lumière blanche
