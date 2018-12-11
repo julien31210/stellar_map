@@ -20,7 +20,7 @@ function init() {
 
   // on créé un cube au quel on définie un matériau puis on l'ajoute à la scène
   const geometry = new THREE.SphereGeometry(200, 30, 30);
-  const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false });
+  const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   // on ajoute une lumière blanche
