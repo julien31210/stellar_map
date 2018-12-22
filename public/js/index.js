@@ -105,13 +105,14 @@ const animate = () => {
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-      const p = camera.position;
-      if (k === '90') camera.translateZ(-speed); // z
-      if (k === '83') camera.translateZ(speed); // s
-      if (k === '68') camera.translateX(speed); // d
-      if (k === '81') camera.translateX(-speed); // q
-      if (k === '32') camera.translateY(speed); // spacebarra
-      if (k === '17') camera.translateY(-speed); // ctrl
+      if (k === global.controls.forward) camera.translateZ(-speed);
+      if (k === global.controls.back) camera.translateZ(speed);
+      if (k === global.controls.right) camera.translateX(speed);
+      if (k === global.controls.left) camera.translateX(-speed);
+      if (k === global.controls.up) camera.translateY(speed);
+      if (k === global.controls.down) camera.translateY(-speed);
+      if (k === global.controls.roll.left) camera.rotateZ(Math.PI/mouseSen/100);
+      if (k === global.controls.roll.right) camera.rotateZ(-Math.PI/mouseSen/100);
     }
     // remove key from object
   });
