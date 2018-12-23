@@ -1,7 +1,7 @@
 
 
 const sphere = (radius, color) => {
-  const geometry = new THREE.SphereGeometry(radius * 2, (radius / 20) + 50, (radius / 20) + 50);
+  const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 50, (radius / 20) + 50);
   const material = new THREE.MeshBasicMaterial({
     color,
     // wireframe: true
@@ -29,7 +29,7 @@ const createSollarSystem = (size) => { // eslint-disable-line
 
   const moon = new Astre({
     radius: 1737 / dimentionsDivider, // 10 times biger for perception
-    color: 0x0ffffff,
+    color: 0xcccccc,
     type: 'planet',
     orbit: {
       parent: earth,
