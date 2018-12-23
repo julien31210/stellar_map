@@ -1,21 +1,32 @@
-let renderer, scene, camera, lastRot;
+let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
+
 const univers = [];
+const baseTimeSpeed = .1;
+let speedUp = 1;
+
 let speed = 250; // camera mouvement speed
-const mouseSen = 2;
+const mouseSen = 1;
 const keys = {};
 let mousepressed = false;
+let mouseOvers = [];
 
 const logger = {};
-
-const dimentionsDivider = 10000;
 
 onkeydown = onkeyup = (e) => {
   // console.log('e.keyCode', e.keyCode);
   keys[e.keyCode] = e.type === 'keydown';
+  if (e.type === 'keydown') {
+    if (e.keyCode == global.controls.logger) console.log(logger);
+    if (e.keyCode == global.controls.timeSpeed.slowDown) speedUp > -20 ? speedUp -= 1 : null;
+    if (e.keyCode == global.controls.timeSpeed.speedUp) speedUp < 20 ? speedUp += 1 : null;
+  }
 
 };
 
 onmousemove = (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
   const newRot = { x: e.clientX, y: e.clientY };
   if (mousepressed) {
     const p = camera.rotation;
@@ -26,118 +37,45 @@ onmousemove = (e) => {
   lastRot = newRot;
 };
 
+oncontextmenu = (e) => {
+  e.preventDefault();
+  mousepressed = false;
+  if (mouseOvers.length) {
+    cameraClipedTo = mouseOvers[0].object;
+
+    univers.forEach((el) => {
+      if (cameraClipedTo && (cameraClipedTo.uuid === el.uuid)) {
+        el.threeObj.add(camera);
+        // raycaster.setFromCamera(mouse, camera);
+      }
+    });
+
+    console.log(mouseOvers[0].object);
+  }
+};
+
 onmousedown = (e) => {
-  mousepressed = true;
+  e.preventDefault();
+
+  console.log(e.type);
+
+  if (e.type !== 'contextmenu') {
+    mousepressed = true;
+
+  }
 };
 onmouseup = (e) => {
+  console.log(e.type);
   mousepressed = false;
 };
 onmousewheel = (e) => {
   e.preventDefault();
   e.stopPropagation();
 
-  if (e.deltaY > 0) speed -= speed / 7;
-  if (e.deltaY < 0) speed += speed / 7;
+  if (e.deltaY > 0) speed -= speed / 2;
+  if (e.deltaY < 0) speed += speed / 2;
 };
 
-const sphere = (radius, color) => {
-  const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 10, (radius / 20) + 10);
-  const material = new THREE.MeshBasicMaterial({
-    color,
-    wireframe: true
-  });
-  return new THREE.Mesh(geometry, material);
-};
-
-class Astre {
-  constructor({ radius, color, type, mass, orbit }) {
-    // DOC
-    // orbit = {
-    //   parent = orbital direct parent,
-    //   distance = distance between parent and this astral object,
-    // }
-
-    this.mass = mass;
-    this.type = type;
-    this.radius = radius;
-    this.color = color;
-    this.orbitObj = orbit;
-
-    this.init();
-
-  }
-
-  init() {
-
-    if (this.orbitObj && this.orbitObj.parent && this.orbitObj.parent.mass && this.orbitObj.distance) {
-
-      const orbitSpeed = (Math.sqrt(6.67 * (10 ** -11) * this.orbitObj.parent.mass / this.orbitObj.distance)) / dimentionsDivider;
-      const orbitPeriod = Math.PI * 2 * this.orbitObj.distance / orbitSpeed;
-      console.log('orbitSpeed', orbitSpeed);
-      console.log('orbitPeriod', orbitPeriod);
-
-      this.radiantPosition = range(Math.PI, -Math.PI, orbitPeriod * 30);
-      // this.radiantsIndex = Math.floor(Math.random() * (this.radiantPosition.length - 1));
-      this.radiantsIndex = Math.floor(this.radiantPosition.length * 0.64);
-    }
-
-    // this.logMySelf();
-    this.initThreeObj();
-  }
-
-  logMySelf() {
-    console.log(this);
-  }
-
-  initThreeObj() {
-    const { radius, color } = this;
-    this.threeObj = sphere(radius, color);
-
-    scene.add(this.threeObj);
-  }
-
-  orbit(stellarParent) {
-    this.orbitObj.parent = stellarParent;
-  }
-
-  animate() {
-    if (this.orbitObj && this.orbitObj.parent && this.radiantsIndex) {
-      const { radiantPosition, orbitObj: { parent, distance } } = this;
-
-      // const a = new THREE.Vector3(parent.threeObj.position.x, parent.threeObj.position.y, parent.threeObj.position.z);
-      // const b = new THREE.Vector3(this.threeObj.position.x, this.threeObj.position.y, this.threeObj.position.z);
-      // const d = a.distanceTo(b);
-      if (this.radiantsIndex > radiantPosition.length - 1) this.radiantsIndex = 0;
-
-      this.threeObj.position.x = parent.threeObj.position.x + Math.cos(radiantPosition[this.radiantsIndex]) * distance;
-      this.threeObj.position.z = parent.threeObj.position.z + Math.sin(radiantPosition[this.radiantsIndex]) * distance;
-      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(radiantPosition[this.radiantsIndex]) * -distance / 5;
-      this.radiantsIndex += 1;
-    }
-  }
-}
-
-
-const createSollarSystem = (size) => { // eslint-disable-line
-  const sun = new Astre({ radius: (69.57 * (10 ** 5)) / dimentionsDivider, color: 0xf0f00f, mass: (1.989 * (10 ** 30)) / dimentionsDivider, type: 'star' });
-  univers.push(sun);
-
-  const earth = new Astre({
-    radius: 63710 / dimentionsDivider, // 10 times biger for perception
-    color: 0x00ffff,
-    type: 'planet',
-    orbit: {
-      parent: sun,
-      distance: (149 * (10 ** 6)) / dimentionsDivider,
-      speed: 10,
-    },
-    mass: (5.972 * (10 ** 24)) / dimentionsDivider
-  });
-  univers.push(earth);
-
-
-  // moon mass 7.36 * (10 ** 2.2) kg for later
-};
 
 const init = () => {
 
@@ -153,9 +91,14 @@ const init = () => {
   scene = new THREE.Scene();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000000);
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, 1000000);
   camera.position.set(0, 0, 700);
   scene.add(camera);
+
+
+  mouse = new THREE.Vector2();
+  raycaster = new THREE.Raycaster();
+
 
   createSollarSystem(2);
 
@@ -188,24 +131,29 @@ const animate = () => {
       if (k === global.controls.down) camera.translateY(-speed);
       if (k === global.controls.roll.left) camera.rotateZ(Math.PI / mouseSen / 75);
       if (k === global.controls.roll.right) camera.rotateZ(-Math.PI / mouseSen / 75);
-      if (k === global.controls.logger) console.log(logger);
-
     }
     // remove key from object
   });
+
+  if (mouseOvers.length > 0) {
+    console.log(mouseOvers);
+  }
+
   // on appel la fonction animate() récursivement à chaque frame
   requestAnimationFrame(animate);
-
-  // camera.lookAt(scene.position);
 
   const time = Date.now() * 0.005;
 
   univers.forEach((el) => {
-    el.animate();
+    el.animate(speedUp);
   });
+
+  raycaster.setFromCamera(mouse, camera);
+  mouseOvers = raycaster.intersectObjects(scene.children);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
+
 };
 
 init();
