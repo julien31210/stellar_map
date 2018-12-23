@@ -77,7 +77,8 @@ class Astre {
       console.log('orbitPeriod', orbitPeriod);
 
       this.radiantPosition = range(Math.PI, -Math.PI, orbitPeriod * 30);
-      this.radiantsIndex = 1;
+      // this.radiantsIndex = Math.floor(Math.random() * (this.radiantPosition.length - 1));
+      this.radiantsIndex = Math.floor(this.radiantPosition.length * 0.64);
     }
 
     // this.logMySelf();
@@ -110,7 +111,7 @@ class Astre {
 
       this.threeObj.position.x = parent.threeObj.position.x + Math.cos(radiantPosition[this.radiantsIndex]) * distance;
       this.threeObj.position.z = parent.threeObj.position.z + Math.sin(radiantPosition[this.radiantsIndex]) * distance;
-      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(radiantPosition[this.radiantsIndex]) * 0;
+      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(radiantPosition[this.radiantsIndex]) * -distance / 5;
       this.radiantsIndex += 1;
     }
   }
