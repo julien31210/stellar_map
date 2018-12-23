@@ -1,13 +1,16 @@
 let renderer, scene, camera, lastRot;
 const univers = [];
-const speed = 3; // 3 px per frame
+let speed = 250; // camera mouvement speed
 const mouseSen = 2;
-
 const keys = {};
 let mousepressed = false;
 
+const logger = {};
+
+const dimentionsDivider = 10000;
+
 onkeydown = onkeyup = (e) => {
-  console.log(e.keyCode);
+  // console.log('e.keyCode', e.keyCode);
   keys[e.keyCode] = e.type === 'keydown';
 
 };
@@ -29,64 +32,131 @@ onmousedown = (e) => {
 onmouseup = (e) => {
   mousepressed = false;
 };
+onmousewheel = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (e.deltaY > 0) speed -= speed / 7;
+  if (e.deltaY < 0) speed += speed / 7;
+};
 
 const sphere = (radius, color) => {
-  const geometry = new THREE.SphereGeometry(radius, radius / 2, radius / 2);
-  const material = new THREE.MeshBasicMaterial({ color, wireframe: true });
+  const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 10, (radius / 20) + 10);
+  const material = new THREE.MeshBasicMaterial({
+    color,
+    wireframe: true
+  });
   return new THREE.Mesh(geometry, material);
 };
 
-const makePivot = (pivotObject, planete) => {
-  console.log(pivotObject, planete);
-  // create pivot object
-  const pivot = new THREE.Object3D();
-  pivotObject.add(pivot);
+class Astre {
+  constructor({ radius, color, type, mass, orbit }) {
+    // DOC
+    // orbit = {
+    //   parent = orbital direct parent,
+    //   distance = distance between parent and this astral object,
+    // }
 
-  // add planet to pivot
-  pivot.add(planete);
-  return pivot;
-};
+    this.mass = mass;
+    this.type = type;
+    this.radius = radius;
+    this.color = color;
+    this.orbitObj = orbit;
 
-const createSollarSystem = (size) => {
-  const sollarSystem = new THREE.Object3D();
-  const sun = sphere(100, 0xf0f00f);
-  univers.push({ threeObj: sun, rotate: { x: 0, y: 0.007, z: 0 } });
-  sollarSystem.add(sun);
-  if (size === 1) {
-    return sollarSystem;
+    this.init();
+
   }
 
-  // on créé une sphere au quel on définie un matériau puis on l'ajoute à la scène
-  const planet = sphere(50, 0x00ffff);
-  univers.push({ threeObj: planet, rotate: { x: 0, y: 0.007, z: 0 } });
-  // const pivotPoint = makePivot(sun, planet);
-  // univers.push(pivotPoint);
-  // on donne une position à la seconde sphere
-  planet.position.set(0, 0, 0);
-  sollarSystem.add(planet);
-  return sollarSystem;
+  init() {
+
+    if (this.orbitObj && this.orbitObj.parent && this.orbitObj.parent.mass && this.orbitObj.distance) {
+
+      const orbitSpeed = (Math.sqrt(6.67 * (10 ** -11) * this.orbitObj.parent.mass / this.orbitObj.distance)) / dimentionsDivider;
+      const orbitPeriod = Math.PI * 2 * this.orbitObj.distance / orbitSpeed;
+      console.log('orbitSpeed', orbitSpeed);
+      console.log('orbitPeriod', orbitPeriod);
+
+      this.radiantPosition = range(Math.PI, -Math.PI, orbitPeriod * 30);
+      this.radiantsIndex = 1;
+    }
+
+    // this.logMySelf();
+    this.initThreeObj();
+  }
+
+  logMySelf() {
+    console.log(this);
+  }
+
+  initThreeObj() {
+    const { radius, color } = this;
+    this.threeObj = sphere(radius, color);
+
+    scene.add(this.threeObj);
+  }
+
+  orbit(stellarParent) {
+    this.orbitObj.parent = stellarParent;
+  }
+
+  animate() {
+    if (this.orbitObj && this.orbitObj.parent && this.radiantsIndex) {
+      const { radiantPosition, orbitObj: { parent, distance } } = this;
+
+      // const a = new THREE.Vector3(parent.threeObj.position.x, parent.threeObj.position.y, parent.threeObj.position.z);
+      // const b = new THREE.Vector3(this.threeObj.position.x, this.threeObj.position.y, this.threeObj.position.z);
+      // const d = a.distanceTo(b);
+      if (this.radiantsIndex > radiantPosition.length - 1) this.radiantsIndex = 0;
+
+      this.threeObj.position.x = parent.threeObj.position.x + Math.cos(radiantPosition[this.radiantsIndex]) * distance;
+      this.threeObj.position.z = parent.threeObj.position.z + Math.sin(radiantPosition[this.radiantsIndex]) * distance;
+      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(radiantPosition[this.radiantsIndex]) * 0;
+      this.radiantsIndex += 1;
+    }
+  }
+}
+
+
+const createSollarSystem = (size) => { // eslint-disable-line
+  const sun = new Astre({ radius: (69.57 * (10 ** 5)) / dimentionsDivider, color: 0xf0f00f, mass: (1.989 * (10 ** 30)) / dimentionsDivider, type: 'star' });
+  univers.push(sun);
+
+  const earth = new Astre({
+    radius: 63710 / dimentionsDivider, // 10 times biger for perception
+    color: 0x00ffff,
+    type: 'planet',
+    orbit: {
+      parent: sun,
+      distance: (149 * (10 ** 6)) / dimentionsDivider,
+      speed: 10,
+    },
+    mass: (5.972 * (10 ** 24)) / dimentionsDivider
+  });
+  univers.push(earth);
+
+
+  // moon mass 7.36 * (10 ** 2.2) kg for later
 };
 
 const init = () => {
 
   // on initialise le moteur de rendu
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ antialias: true });
 
   // si WebGL ne fonctionne pas sur votre navigateur on peut utiliser le moteur de rendu Canvas à la place
   // renderer = new THREE.CanvasRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight + 10);
   document.getElementById('container').appendChild(renderer.domElement);
 
   // on initialise la scène
   scene = new THREE.Scene();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000000);
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
-  const sollarSystem = createSollarSystem(2);
-  scene.add(sollarSystem);
+  createSollarSystem(2);
 
   // on ajoute une lumière blanche
   const lumiere = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -97,11 +167,15 @@ const init = () => {
   renderer.render(scene, camera);
 };
 
-const longitude = range(Math.PI, -Math.PI, 1000);
-let j = 0;
-console.log(longitude);
+let frameCount = 0;
+setInterval(() => {
+  console.log('frameCount', frameCount);
+  frameCount = 0;
+}, 1000);
 
 const animate = () => {
+
+  frameCount += 1;
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
@@ -111,39 +185,24 @@ const animate = () => {
       if (k === global.controls.left) camera.translateX(-speed);
       if (k === global.controls.up) camera.translateY(speed);
       if (k === global.controls.down) camera.translateY(-speed);
-      if (k === global.controls.roll.left) camera.rotateZ(Math.PI/mouseSen/100);
-      if (k === global.controls.roll.right) camera.rotateZ(-Math.PI/mouseSen/100);
+      if (k === global.controls.roll.left) camera.rotateZ(Math.PI / mouseSen / 75);
+      if (k === global.controls.roll.right) camera.rotateZ(-Math.PI / mouseSen / 75);
+      if (k === global.controls.logger) console.log(logger);
+
     }
     // remove key from object
   });
   // on appel la fonction animate() récursivement à chaque frame
   requestAnimationFrame(animate);
 
-  // const SpherePosition = mesh1.position.set(100, 100, 100);
-  // SpherePosition.position.set(10, 10, 10);
-
   // camera.lookAt(scene.position);
-  // on fait tourner la sphere sur ses axes x et y
+
   const time = Date.now() * 0.005;
 
-  if (j >= longitude.length - 1) j = 0;
+  univers.forEach((el) => {
+    el.animate();
+  });
 
-  univers[1].threeObj.position.x = Math.cos(longitude[j]) * 200;
-  univers[1].threeObj.position.z = Math.sin(longitude[j]) * 200;
-  univers[1].threeObj.position.y = Math.sin(longitude[j]) * -40;
-  j += 1;
-  // console.log(longitude[i]);
-  // console.log('x', Math.cos(longitude[i]) * 5);
-  // console.log('y', Math.sin(longitude[i]) * 5);
-  // const { threeObj: { rotation }, rotate: { x: rx, y: ry, z: rz } } = univers[0];
-  // const { x, y, z } = rotation;
-  // rotation.set(x + rx, y + ry, z + rz);
-  // pivotPoint.rotation.y += 0.09;
-  // mesh1.rotation.x += 0.00;
-  // mesh1.rotation.y += 0.00;
-  // mesh1.position.x += 0.05;
-  // mesh2.rotation.x += 0.00;
-  // mesh2.rotation.y += 0.00;
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
 };
