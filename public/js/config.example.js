@@ -12,4 +12,4 @@ const global = {
     },
     logger: '76'
   }
-}
+};
