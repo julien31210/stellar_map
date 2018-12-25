@@ -5,8 +5,8 @@ const current_controls = controls.azerty;
 let delta = 0;
 const clock = new THREE.Clock();
 const univers = [];
-const baseTimeSpeed = .1;
-let speedUp = 1;
+const baseTimeSpeed = 1; // how many seconds pass in one second
+let timeSpeedMultiplicator = 1;
 
 let speed = 250; // camera mouvement speed
 const mouseSen = 1;
@@ -21,8 +21,8 @@ onkeydown = onkeyup = (e) => {
   keys[e.keyCode] = e.type === 'keydown';
   if (e.type === 'keydown') {
     if (e.keyCode == current_controls.logger) console.log(logger);
-    if (e.keyCode == current_controls.timeSpeed.slowDown) speedUp > -20 ? speedUp -= 1 : null;
-    if (e.keyCode == current_controls.timeSpeed.speedUp) speedUp < 20 ? speedUp += 1 : null;
+    if (e.keyCode == current_controls.timeSpeed.slowDown) timeSpeedMultiplicator > -50 ? timeSpeedMultiplicator -= 1 : null;
+    if (e.keyCode == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 50 ? timeSpeedMultiplicator += 1 : null;
   }
 
 };
@@ -61,15 +61,12 @@ oncontextmenu = (e) => {
 onmousedown = (e) => {
   e.preventDefault();
 
-  console.log(e.type);
-
   if (e.type !== 'contextmenu') {
     mousepressed = true;
 
   }
 };
 onmouseup = (e) => {
-  console.log(e.type);
   mousepressed = false;
 };
 onmousewheel = (e) => {
@@ -146,7 +143,7 @@ const animate = () => {
 
   univers.forEach((el) => {
     let d = 0;
-    if (speedUp !== 0) d = delta / speedUp;
+    if (timeSpeedMultiplicator !== 0) d = delta * baseTimeSpeed * timeSpeedMultiplicator;
     el.animate(d);
   });
 
