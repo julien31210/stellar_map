@@ -10,6 +10,10 @@ const global = {
       right: '69',
       left: '65',
     },
-    logger: '76'
+    logger: '76',
+    timeSpeed: {
+      speedUp: '82',
+      slowDown: '70'
+    }
   }
 };

@@ -41,6 +41,7 @@ module.exports = {
     "onkeydown": true,
     "onkeyup": true,
     "onmousewheel": true,
+    "oncontextmenu": true,
     "requestAnimationFrame": true,
   }
 }
