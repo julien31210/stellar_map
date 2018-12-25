@@ -17,7 +17,7 @@ let mouseOvers = [];
 const logger = {};
 
 onkeydown = onkeyup = (e) => {
-  console.log('e.keyCode', e.keyCode);
+  // console.log('e.keyCode', e.keyCode);
   keys[e.keyCode] = e.type === 'keydown';
   if (e.type === 'keydown') {
     if (e.keyCode == current_controls.logger) console.log(logger);
