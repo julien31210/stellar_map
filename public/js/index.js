@@ -1,5 +1,7 @@
 let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
 
+const current_controls = controls.azerty;
+
 let delta = 0;
 const clock = new THREE.Clock();
 const univers = [];
@@ -18,9 +20,9 @@ onkeydown = onkeyup = (e) => {
   // console.log('e.keyCode', e.keyCode);
   keys[e.keyCode] = e.type === 'keydown';
   if (e.type === 'keydown') {
-    if (e.keyCode == global.controls.logger) console.log(logger);
-    if (e.keyCode == global.controls.timeSpeed.slowDown) speedUp > -20 ? speedUp -= 1 : null;
-    if (e.keyCode == global.controls.timeSpeed.speedUp) speedUp < 20 ? speedUp += 1 : null;
+    if (e.keyCode == current_controls.logger) console.log(logger);
+    if (e.keyCode == current_controls.timeSpeed.slowDown) speedUp > -20 ? speedUp -= 1 : null;
+    if (e.keyCode == current_controls.timeSpeed.speedUp) speedUp < 20 ? speedUp += 1 : null;
   }
 
 };
@@ -123,14 +125,14 @@ const animate = () => {
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-      if (k === global.controls.forward) camera.translateZ(-speed);
-      if (k === global.controls.back) camera.translateZ(speed);
-      if (k === global.controls.right) camera.translateX(speed);
-      if (k === global.controls.left) camera.translateX(-speed);
-      if (k === global.controls.up) camera.translateY(speed);
-      if (k === global.controls.down) camera.translateY(-speed);
-      if (k === global.controls.roll.left) camera.rotateZ(Math.PI / mouseSen / 75);
-      if (k === global.controls.roll.right) camera.rotateZ(-Math.PI / mouseSen / 75);
+      if (k === current_controls.forward) camera.translateZ(-speed);
+      if (k === current_controls.back) camera.translateZ(speed);
+      if (k === current_controls.right) camera.translateX(speed);
+      if (k === current_controls.left) camera.translateX(-speed);
+      if (k === current_controls.up) camera.translateY(speed);
+      if (k === current_controls.down) camera.translateY(-speed);
+      if (k === current_controls.roll.left) camera.rotateZ(Math.PI / mouseSen / 75);
+      if (k === current_controls.roll.right) camera.rotateZ(-Math.PI / mouseSen / 75);
     }
     // remove key from object
   });
