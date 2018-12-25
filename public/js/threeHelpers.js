@@ -1,7 +1,7 @@
 
 
 const sphere = (radius, color) => {
-  const geometry = new THREE.SphereGeometry(radius + 20, (radius / 20) + 50, (radius / 20) + 50);
+  const geometry = new THREE.SphereGeometry(radius + 2, (radius / 20) + 50, (radius / 20) + 50);
   const material = new THREE.MeshBasicMaterial({
     color,
     // wireframe: true
