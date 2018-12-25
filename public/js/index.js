@@ -1,5 +1,7 @@
 let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
 
+let delta = 0;
+const clock = new THREE.Clock();
 const univers = [];
 const baseTimeSpeed = .1;
 let speedUp = 1;
@@ -91,7 +93,7 @@ const init = () => {
   scene = new THREE.Scene();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, 1000000);
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, 100000000);
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
@@ -118,6 +120,7 @@ setInterval(() => {
 }, 1000);
 
 const animate = () => {
+  delta = clock.getDelta();
 
   frameCount += 1;
 
@@ -135,17 +138,14 @@ const animate = () => {
     // remove key from object
   });
 
-  if (mouseOvers.length > 0) {
-    console.log(mouseOvers);
-  }
 
   // on appel la fonction animate() récursivement à chaque frame
   requestAnimationFrame(animate);
 
-  const time = Date.now() * 0.005;
-
   univers.forEach((el) => {
-    el.animate(speedUp);
+    let d = 0;
+    if (speedUp !== 0) d = delta / speedUp;
+    el.animate(d);
   });
 
   raycaster.setFromCamera(mouse, camera);

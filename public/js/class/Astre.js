@@ -26,9 +26,8 @@ class Astre {
       console.log('orbitSpeed', orbitSpeed);
       console.log('orbitPeriod', orbitPeriod);
 
-      this.radiantPosition = range(Math.PI, -Math.PI, orbitPeriod * (30 / baseTimeSpeed));
-      // this.radiantsIndex = Math.floor(Math.random() * (this.radiantPosition.length - 1));
-      this.radiantsIndex = Math.floor(this.radiantPosition.length * 0.64);
+      this.radialPosition = Math.PI;
+      this.nominalRadiantSpeed = ((2 * Math.PI - Math.PI) / orbitPeriod) / 10000
     }
 
     // this.logMySelf();
@@ -41,7 +40,7 @@ class Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    this.threeObj = sphere(radius * 2, color);
+    this.threeObj = sphere(radius, color);
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
   }
@@ -50,22 +49,18 @@ class Astre {
     this.orbitObj.parent = stellarParent;
   }
 
-  animate(s) {
-    if (this.orbitObj && this.orbitObj.parent && this.radiantsIndex) {
-      const { radiantPosition, orbitObj: { parent, distance } } = this;
+  animate(delta) {
+    if (this.orbitObj && this.orbitObj.parent) {
+      const { nominalRadiantSpeed, orbitObj: { parent, distance } } = this;
 
       // const a = new THREE.Vector3(parent.threeObj.position.x, parent.threeObj.position.y, parent.threeObj.position.z);
       // const b = new THREE.Vector3(this.threeObj.position.x, this.threeObj.position.y, this.threeObj.position.z);
       // const d = a.distanceTo(b);
+      if (delta !== 0) this.radialPosition += nominalRadiantSpeed / delta;
+      this.threeObj.position.x = parent.threeObj.position.x + Math.cos(this.radialPosition) * distance;
+      this.threeObj.position.z = parent.threeObj.position.z + Math.sin(this.radialPosition) * distance;
+      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(this.radialPosition) * 0;
 
-      if (this.radiantsIndex > radiantPosition.length - 1) this.radiantsIndex = 0;
-      if (this.radiantsIndex < 0) this.radiantsIndex = radiantPosition.length - 1;
-      if (s !== 0) {
-        this.threeObj.position.x = parent.threeObj.position.x + Math.cos(radiantPosition[this.radiantsIndex]) * distance;
-        this.threeObj.position.z = parent.threeObj.position.z + Math.sin(radiantPosition[this.radiantsIndex]) * distance;
-        this.threeObj.position.y = parent.threeObj.position.y + Math.sin(radiantPosition[this.radiantsIndex]) * 0;
-        this.radiantsIndex += s; // increment of mote then 1 for speeding up the sim
-      }
     }
   }
 }
