@@ -11,3 +11,21 @@ const range = (start, end, scl) => {
   }
   return r;
 };
+
+const randOn100 = chances => Math.random() * 100 <= chances;
+const randOnN = (from, to) => (Math.random() * (to - from)) + from;
+const radiantRand = () => ((Math.random() * 2 - 1) * Math.PI) - Math.PI;
+// ((Math.random() * 2 - 1) * number - number / variation) - Math.PI;s
+
+const aprox = (number, variation) => {
+
+  const min = number - number / variation;
+  const max = number + number / variation;
+
+  return randOnN(min, max);
+};
+
+const randOnArray = (arr) => {
+  const r = Math.round(Math.random() * (arr.length - 1));
+  return arr[r];
+};
