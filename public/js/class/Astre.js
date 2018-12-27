@@ -40,7 +40,12 @@ class Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    this.threeObj = sphere(radius, color);
+    if (this.type === 'star') {
+      this.threeObj = sunlight(color, 2, 10000000, radius);
+    } else {
+      this.threeObj = sphere(radius, color);
+    }
+
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
   }
