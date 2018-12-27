@@ -14,7 +14,11 @@ const controls = {
     timeSpeed: {
       speedUp: '82',
       slowDown: '70'
-    }
+    },
+    camera: {
+      speedUp: '84',
+      slowDown: '71',
+    },
   },
   azerty: {
     forward: '87',
@@ -31,6 +35,10 @@ const controls = {
     timeSpeed: {
       speedUp: '82',
       slowDown: '70'
-    }
+    },
+    camera: {
+      speedUp: '84',
+      slowDown: '71'
+    },
   }
 };
