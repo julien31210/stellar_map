@@ -1,18 +1,38 @@
 
 
-const sphere = (radius, color) => {
+const sphere = (radius, color, type) => {
   const geometry = new THREE.SphereGeometry(radius + 2, (radius / 20) + 50, (radius / 20) + 50);
-  const material = new THREE.MeshBasicMaterial({
-    color,
-    // wireframe: true
-  });
+  let material;
+  if (type === 'basic') {
+    material = new THREE.MeshBasicMaterial({
+      color,
+    });
+  } else {
+    material = new THREE.MeshStandardMaterial({
+      color,
+    });
+  }
+
   return new THREE.Mesh(geometry, material);
 };
 
 const dimentionsDivider = 10000;
 
+const sunlight = (color, intensity, scope, radius) => {
+
+  const sollar = sphere(radius, color, 'basic');
+  const light = new THREE.PointLight(color, intensity, scope);
+
+  return light.add(sollar);
+};
+
 const createSollarSystem = (size) => { // eslint-disable-line
-  const sun = new Astre({ radius: (69.57 * (10 ** 5)) / dimentionsDivider, color: 0xf0f00f, mass: (1.989 * (10 ** 30)) / dimentionsDivider, type: 'star' });
+  const sun = new Astre({
+    radius: (69.57 * (10 ** 5)) / dimentionsDivider,
+    color: 0xf0f00f,
+    mass: (1.989 * (10 ** 30)) / dimentionsDivider,
+    type: 'star'
+  });
   univers.push(sun);
 
   const earth = new Astre({
