@@ -23,6 +23,8 @@ onkeydown = onkeyup = (e) => {
     if (e.keyCode == current_controls.logger) console.log(logger);
     if (e.keyCode == current_controls.timeSpeed.slowDown) speedUp > -20 ? speedUp -= 1 : null;
     if (e.keyCode == current_controls.timeSpeed.speedUp) speedUp < 20 ? speedUp += 1 : null;
+    if (e.keyCode == current_controls.camera.speedUp) speed += speed / 2;
+    if (e.keyCode == current_controls.camera.slowDown) speed -= speed / 2;
   }
 
 };
@@ -106,10 +108,6 @@ const init = () => {
 
   createSollarSystem(2);
 
-  // on ajoute une lumière blanche
-  const lumiere = new THREE.DirectionalLight(0xffffff, 1.0);
-  lumiere.position.set(0, 0, 400);
-  scene.add(lumiere);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
