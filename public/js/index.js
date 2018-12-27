@@ -23,7 +23,7 @@ onkeydown = onkeyup = (e) => {
     if (e.keyCode == current_controls.logger) console.log(logger);
     if (e.keyCode == current_controls.timeSpeed.slowDown) timeSpeedMultiplicator > -50 ? timeSpeedMultiplicator -= 1 : null;
 ``
-    if (e.keyCode == current_controls.timeSpeed.speedUp) speedUp < 50 ? speedUp += 1 : null;
+    if (e.keyCode == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 50 ? timeSpeedMultiplicator += 1 : null;
     if (e.keyCode == current_controls.camera.speedUp) speed += speed / 2;
     if (e.keyCode == current_controls.camera.slowDown) speed -= speed / 2;
   }
