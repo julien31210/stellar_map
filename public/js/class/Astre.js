@@ -20,14 +20,13 @@ class Astre {
   init() {
 
     if (this.orbitObj && this.orbitObj.parent && this.orbitObj.parent.mass && this.orbitObj.distance) {
+      const { sqrt, PI } = Math;
 
-      const orbitSpeed = (Math.sqrt(6.67 * (10 ** -11) * this.orbitObj.parent.mass / this.orbitObj.distance)) / dimentionsDivider;
-      const orbitPeriod = Math.PI * 2 * this.orbitObj.distance / orbitSpeed;
-      console.log('orbitSpeed', orbitSpeed);
-      console.log('orbitPeriod', orbitPeriod);
+      const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbitObj.parent.mass / this.orbitObj.distance) / dimentionsDivider;
+      const orbitPeriod = PI * 2 * this.orbitObj.distance / orbitSpeed;
 
-      this.radialPosition = Math.PI;
-      this.nominalRadiantSpeed = ((2 * Math.PI - Math.PI) / orbitPeriod);
+      this.radialPosition = PI;
+      this.nominalRadiantSpeed = ((2 * PI - PI) / orbitPeriod);
     }
 
     // this.logMySelf();
@@ -77,7 +76,7 @@ class AsteroiBelt extends Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    const { beltCenter, asteroids, eccentricity } = asteroiBelt({ nb: this.orbitObj.nb, distance: this.orbitObj.distance, color, radius, eccentricity: 2000 });
+    const { beltCenter, asteroids, eccentricity } = asteroiBelt({ nb: this.orbitObj.nb, distance: this.orbitObj.distance, color, radius, eccentricity: 750 });
 
     this.threeObj = beltCenter;
     this.orbitObj.asteroids = asteroids;
@@ -93,7 +92,7 @@ class AsteroiBelt extends Astre {
     const { nominalRadiantSpeed, orbitObj: { parent, apo, contrapo, eccentricity, tilt } } = this;
     const radialStep = nominalRadiantSpeed * delta;
 
-    if (delta !== 0) this.radialPosition += radialStep;
+    if (radialStep !== 0) this.radialPosition += radialStep;
     if (this.radialPosition > Math.PI * 100) {
       this.radialPosition -= Math.PI * 100;
     }
@@ -106,8 +105,8 @@ class AsteroiBelt extends Astre {
       const rad = this.radialPosition + radialPosition;
 
       threeObj.position.x = parent.threeObj.position.x + eccentricity + cos(rad) * (d + eccentricity);
-      threeObj.position.z = parent.threeObj.position.z + sin(rad) * d;
-      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d / 50);
+      threeObj.position.z = parent.threeObj.position.z + sin(rad) * (d - d / 15);
+      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d / 50) - sin(rad) * (d / 15);
       // + cos(rad) * (d) + d / 2;
       this.test = cos(rad) * d;
     });
