@@ -12,10 +12,10 @@ const range = (start, end, scl) => {
   return r;
 };
 
+const degrees = radians => radians * 180 / Math.PI;
 const randOn100 = chances => Math.random() * 100 <= chances;
 const randOnN = (from, to) => (Math.random() * (to - from)) + from;
 const radiantRand = () => ((Math.random() * 2 - 1) * Math.PI) - Math.PI;
-// ((Math.random() * 2 - 1) * number - number / variation) - Math.PI;s
 
 const aprox = (number, variation) => {
 
