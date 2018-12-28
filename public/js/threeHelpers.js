@@ -19,12 +19,10 @@ const asteroiBelt = ({ nb, distance, color, radius, eccentricity }) => {
     // wireframe: true
   });
 
-  // const eccentricity = randOnN(5000, 10000);
   const aproxEccentricity = aprox(eccentricity, 2);
 
   for (let i = 0; i < nb; i += 1) {
     const r = aprox(radius, 1.1);
-    // console.log(r);
     const geometry = new THREE.SphereGeometry(r, 5, 5);
 
     const astero = new THREE.Mesh(geometry, material);
@@ -33,10 +31,6 @@ const asteroiBelt = ({ nb, distance, color, radius, eccentricity }) => {
     const radialPositionY = radiantRand();
 
     const d = aprox(distance, 20);
-    // console.log('d', d);
-    astero.position.x = aproxEccentricity + Math.cos(radialPosition) * ((d * 2) + aproxEccentricity);
-    astero.position.z = Math.sin(radialPosition) * (d * 2);
-    astero.position.y = Math.sin(radialPositionY) * d / 50;
 
     asteroids.push({ threeObj: astero, radialPosition, radialPositionY, d });
     beltCenter.add(astero);
@@ -79,7 +73,7 @@ const createSollarSystem = (size) => { // eslint-disable-line
   });
   univers.push(moon);
 
-  const asteroidBelt = new Astre({
+  const asteroidBelt = new AsteroiBelt({
     radius: 30000 / dimentionsDivider,
     color: 0xcccccc,
     type: 'asteroid belt',
