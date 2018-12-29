@@ -42,9 +42,13 @@ class Astre {
     if (this.type === 'star') {
       this.threeObj = sunlight(color, 2, 10000000, radius);
     } else {
+      const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbitObj;
       this.threeObj = sphere(radius, color);
-    }
 
+      this.orbitObj.eccentricity = (aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100) || 0;
+      this.orbitObj.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
+      this.orbitObj.tilt = aprox(tilt, aproxValues && aproxValues.tilt) || 0;
+    }
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
   }
@@ -55,16 +59,16 @@ class Astre {
 
   animate(delta) {
     if (this.orbitObj && this.orbitObj.parent) {
-      const { nominalRadiantSpeed, orbitObj: { parent, distance } } = this;
+      const { nominalRadiantSpeed, orbitObj: { parent, distance, eccentricity, tilt } } = this;
+      const { cos, sin, PI } = Math;
+
       const radialStep = nominalRadiantSpeed * delta;
       if (radialStep !== 0) this.radialPosition += radialStep;
-      if (this.radialPosition > Math.PI * 100) {
-        this.radialPosition -= Math.PI * 100;
-      }
+      if (this.radialPosition > PI * 100) this.radialPosition -= PI * 100;
 
-      this.threeObj.position.x = parent.threeObj.position.x + Math.cos(this.radialPosition) * distance;
-      this.threeObj.position.z = parent.threeObj.position.z + Math.sin(this.radialPosition) * distance;
-      this.threeObj.position.y = parent.threeObj.position.y + Math.sin(this.radialPosition) * 0;
+      this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * eccentricity);
+      this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * distance;
+      this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * (tilt / 100);
     }
   }
 }
@@ -83,8 +87,8 @@ class AsteroiBelt extends Astre {
 
     const material = new THREE.MeshStandardMaterial({ color });
 
-    for (let i = 0; i < nb; i += 1) {
-      const r = aprox(radius, aproxValues.radius);
+    for (let i = 0; i < aprox(nb, aproxValues && aproxValues.nb); i += 1) {
+      const r = aprox(radius, aproxValues && aproxValues.radius);
       const geometry = new THREE.SphereGeometry(r, 5, 5);
 
       const astero = new THREE.Mesh(geometry, material);
@@ -92,7 +96,7 @@ class AsteroiBelt extends Astre {
       const radialPosition = radiantRand();
       const radialPositionY = radiantRand();
 
-      const d = aprox(distance, aproxValues.distance);
+      const d = aprox(distance, aproxValues && aproxValues.distance);
 
       asteroids.push({ threeObj: astero, radialPosition, radialPositionY, d });
       beltCenter.add(astero);
@@ -100,9 +104,9 @@ class AsteroiBelt extends Astre {
 
     this.threeObj = beltCenter;
     this.orbitObj.asteroids = asteroids;
-    this.orbitObj.eccentricity = aprox(eccentricity, aproxValues.eccentricity) / 100;
+    this.orbitObj.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100;
 
-    this.threeObj.rotateX(tilt);
+    this.threeObj.rotateX(tilt || 0);
     this.uuid = this.threeObj.uuid;
 
     scene.add(this.threeObj);
