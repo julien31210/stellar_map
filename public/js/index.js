@@ -32,14 +32,11 @@ onkeydown = onkeyup = (e) => {
       const num = k - 48;
       teleportIndex += num.toString(10);
     }
-    if (k === 13 && univers[teleportIndex]) {
-      const { threeObj } = univers[teleportIndex - 1];
-      const { x, y, z } = threeObj.position;
-      threeObj.add(camera);
-      camera.position.set(0, 0, 0);
-      teleportIndex = '';
+    if (k === 13 && univers[teleportIndex - 1]) {
+      const o = univers[teleportIndex - 1];
+      teleportTo(o);
     }
-    if (k === 8) teleportIndex = '';
+    if (k === 8 || k === 13) teleportIndex = '';
   }
 
 };
@@ -165,6 +162,9 @@ const animate = () => {
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
+
+  // logger
+  logger.camPos = camera.position;
   logger.univers = univers;
 
 };

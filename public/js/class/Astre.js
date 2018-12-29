@@ -127,7 +127,7 @@ class AsteroiBelt extends Astre {
 
       threeObj.position.x = parent.threeObj.position.x + d * eccentricity + cos(rad) * (d + d * eccentricity);
       threeObj.position.z = parent.threeObj.position.z + sin(rad) * (d);
-      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d * (thickness / 100));
+      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d * ((thickness || 0) / 100));
     });
 
   }
