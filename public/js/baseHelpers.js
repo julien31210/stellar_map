@@ -21,9 +21,8 @@ const radiantRand = () => (Math.random() * 2 - 1) * Math.PI;
 
 // return aproximately return n more or less percentage
 const aprox = (n, percentage) => {
-  return n && percentage
-    ? randOnN(n - n * ((percentage || 0) / 100), n + n * ((percentage || 0) / 100))
-    : n;
+  if (n && percentage) return randOnN(n - n * ((percentage || 0) / 100), n + n * ((percentage || 0) / 100));
+  return n;
 };
 
 const randOnArray = (arr) => {
