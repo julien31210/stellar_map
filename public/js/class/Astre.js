@@ -26,7 +26,7 @@ class Astre {
       const orbitPeriod = PI * 2 * this.orbitObj.distance / orbitSpeed;
 
       this.radialPosition = PI;
-      this.nominalRadiantSpeed = ((2 * PI - PI) / orbitPeriod);
+      this.nominalRadiantSpeed = PI / orbitPeriod;
     }
 
     // this.logMySelf();
@@ -57,7 +57,7 @@ class Astre {
     if (this.orbitObj && this.orbitObj.parent) {
       const { nominalRadiantSpeed, orbitObj: { parent, distance } } = this;
       const radialStep = nominalRadiantSpeed * delta;
-      if (delta !== 0) this.radialPosition += radialStep;
+      if (radialStep !== 0) this.radialPosition += radialStep;
       if (this.radialPosition > Math.PI * 100) {
         this.radialPosition -= Math.PI * 100;
       }
@@ -76,39 +76,54 @@ class AsteroiBelt extends Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    const { beltCenter, asteroids, eccentricity } = asteroiBelt({ nb: this.orbitObj.nb, distance: this.orbitObj.distance, color, radius, eccentricity: 750 });
+    const { nb, eccentricity, tilt, distance, aprox: aproxValues } = this.orbitObj;
+
+    const beltCenter = new THREE.Object3D();
+    const asteroids = [];
+
+    const material = new THREE.MeshLambertMaterial({ color });
+
+    for (let i = 0; i < nb; i += 1) {
+      const r = aprox(radius, aproxValues.radius);
+      const geometry = new THREE.SphereGeometry(r, 5, 5);
+
+      const astero = new THREE.Mesh(geometry, material);
+
+      const radialPosition = radiantRand();
+      const radialPositionY = radiantRand();
+
+      const d = aprox(distance, aproxValues.distance);
+
+      asteroids.push({ threeObj: astero, radialPosition, radialPositionY, d });
+      beltCenter.add(astero);
+    }
 
     this.threeObj = beltCenter;
     this.orbitObj.asteroids = asteroids;
-    this.orbitObj.eccentricity = eccentricity;
-    this.orbitObj.tilt = 90;
-    this.orbitObj.radius = radius;
+    this.orbitObj.eccentricity = aprox(eccentricity, aproxValues.eccentricity) / 100;
+
+    this.threeObj.rotateX(tilt);
     this.uuid = this.threeObj.uuid;
 
     scene.add(this.threeObj);
   }
 
   animate(delta) {
-    const { nominalRadiantSpeed, orbitObj: { parent, apo, contrapo, eccentricity, tilt } } = this;
+    const { nominalRadiantSpeed, orbitObj: { parent, eccentricity, asteroids } } = this;
+    const { cos, sin, PI } = Math;
     const radialStep = nominalRadiantSpeed * delta;
 
     if (radialStep !== 0) this.radialPosition += radialStep;
-    if (this.radialPosition > Math.PI * 100) {
-      this.radialPosition -= Math.PI * 100;
-    }
+    if (this.radialPosition > PI * 100) this.radialPosition -= PI * 100;
 
-    const { cos, sin } = Math;
-    const { asteroids } = this.orbitObj;
 
     asteroids.forEach((astero) => {
       const { threeObj, radialPosition, radialPositionY, d } = astero;
       const rad = this.radialPosition + radialPosition;
 
-      threeObj.position.x = parent.threeObj.position.x + eccentricity + cos(rad) * (d + eccentricity);
-      threeObj.position.z = parent.threeObj.position.z + sin(rad) * (d - d / 15);
-      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d / 50) - sin(rad) * (d / 15);
-      // + cos(rad) * (d) + d / 2;
-      this.test = cos(rad) * d;
+      threeObj.position.x = parent.threeObj.position.x + d * eccentricity + cos(rad) * (d + d * eccentricity);
+      threeObj.position.z = parent.threeObj.position.z + sin(rad) * (d);
+      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d / 50);
     });
 
   }

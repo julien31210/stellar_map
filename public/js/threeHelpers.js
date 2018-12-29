@@ -16,35 +16,6 @@ const sphere = (radius, color, type) => {
   return new THREE.Mesh(geometry, material);
 };
 
-const asteroiBelt = ({ nb, distance, color, radius, eccentricity }) => {
-
-  const beltCenter = new THREE.Object3D();
-  const asteroids = [];
-
-  const material = new THREE.MeshBasicMaterial({
-    color,
-    // wireframe: true
-  });
-
-  const aproxEccentricity = aprox(eccentricity, 2);
-
-  for (let i = 0; i < nb; i += 1) {
-    const r = aprox(radius, 1.1);
-    const geometry = new THREE.SphereGeometry(r, 5, 5);
-
-    const astero = new THREE.Mesh(geometry, material);
-
-    const radialPosition = radiantRand();
-    const radialPositionY = radiantRand();
-
-    const d = aprox(distance, 20);
-
-    asteroids.push({ threeObj: astero, radialPosition, radialPositionY, d });
-    beltCenter.add(astero);
-  }
-  return { beltCenter, asteroids, eccentricity: aproxEccentricity };
-};
-
 const dimentionsDivider = 10000;
 
 const sunlight = (color, intensity, scope, radius) => {
@@ -95,7 +66,16 @@ const createSollarSystem = (size) => { // eslint-disable-line
     orbit: {
       parent: sun,
       distance: (175 * (10 ** 5)) / dimentionsDivider,
-      nb: 1500
+      nb: 1500,
+      eccentricity: 10,
+      tilt: 45,
+      aprox: {
+        nb: 5,
+        eccentricity: 20,
+        tilt: 20,
+        radius: 90,
+        distance: 5
+      }
     }
   });
   univers.push(asteroidBelt);
