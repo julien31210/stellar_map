@@ -36,7 +36,7 @@ const createSollarSystem = (size) => { // eslint-disable-line
   univers.push(sun);
 
   const earth = new Astre({
-    radius: 6371 / dimentionsDivider, // 10 times biger for perception
+    radius: 6371 / dimentionsDivider,
     color: 0x00ffff,
     type: 'planet',
     orbit: {
@@ -48,7 +48,7 @@ const createSollarSystem = (size) => { // eslint-disable-line
   univers.push(earth);
 
   const moon = new Astre({
-    radius: 1737 / dimentionsDivider, // 10 times biger for perception
+    radius: 1737 / dimentionsDivider,
     color: 0xcccccc,
     type: 'planet',
     orbit: {
@@ -69,12 +69,13 @@ const createSollarSystem = (size) => { // eslint-disable-line
       nb: 1500,
       eccentricity: 10,
       tilt: 45,
+      thickness: 1,
       aprox: {
         nb: 5,
         eccentricity: 20,
         tilt: 20,
         radius: 90,
-        distance: 5
+        distance: 20,
       }
     }
   });

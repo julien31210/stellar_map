@@ -81,7 +81,7 @@ class AsteroiBelt extends Astre {
     const beltCenter = new THREE.Object3D();
     const asteroids = [];
 
-    const material = new THREE.MeshLambertMaterial({ color });
+    const material = new THREE.MeshStandardMaterial({ color });
 
     for (let i = 0; i < nb; i += 1) {
       const r = aprox(radius, aproxValues.radius);
@@ -109,7 +109,7 @@ class AsteroiBelt extends Astre {
   }
 
   animate(delta) {
-    const { nominalRadiantSpeed, orbitObj: { parent, eccentricity, asteroids } } = this;
+    const { nominalRadiantSpeed, orbitObj: { parent, eccentricity, asteroids, thickness } } = this;
     const { cos, sin, PI } = Math;
     const radialStep = nominalRadiantSpeed * delta;
 
@@ -123,7 +123,7 @@ class AsteroiBelt extends Astre {
 
       threeObj.position.x = parent.threeObj.position.x + d * eccentricity + cos(rad) * (d + d * eccentricity);
       threeObj.position.z = parent.threeObj.position.z + sin(rad) * (d);
-      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d / 50);
+      threeObj.position.y = parent.threeObj.position.y + sin(radialPositionY) * (d * (thickness / 100));
     });
 
   }
