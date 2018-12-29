@@ -11,19 +11,16 @@ const range = (start, end, scl) => {
   }
   return r;
 };
-
-const degrees = radians => radians * 180 / Math.PI;
+const convert = {
+  radians: degrees => degrees * Math.PI / 180,
+  degrees: radians => radians * 180 / Math.PI
+}
 const randOn100 = chances => Math.random() * 100 <= chances;
 const randOnN = (from, to) => (Math.random() * (to - from)) + from;
-const radiantRand = () => ((Math.random() * 2 - 1) * Math.PI) - Math.PI;
+const radiantRand = () => (Math.random() * 2 - 1) * Math.PI;
 
-const aprox = (number, variation) => {
-
-  const min = number - number / variation;
-  const max = number + number / variation;
-
-  return randOnN(min, max);
-};
+// return aproximately return n more or less percentage
+const aprox = (n, percentage) => randOnN(n - n * (percentage / 100), n + n * (percentage / 100));
 
 const randOnArray = (arr) => {
   const r = Math.round(Math.random() * (arr.length - 1));
