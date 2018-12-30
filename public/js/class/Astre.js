@@ -40,7 +40,7 @@ class Astre {
   initThreeObj() {
     const { radius, color } = this;
     if (this.type === 'star') {
-      this.threeObj = sunlight({ color, intensity: 2, scope: 10000000, radius });
+      this.threeObj = sunlight({ color, colorlight: 0xffffff, intensity: 2, scope: 10000000, radius });
     } else {
       const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbitObj;
       this.threeObj = sphere(radius, color);

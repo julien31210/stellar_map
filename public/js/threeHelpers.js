@@ -18,10 +18,10 @@ const sphere = (radius, color, type) => {
 
 const dimentionsDivider = 10000;
 
-const sunlight = ({ color, intensity, scope, radius }) => {
+const sunlight = ({ color, intensity, colorlight, scope, radius }) => {
 
   const sollar = sphere(radius, color, 'basic');
-  const light = new THREE.PointLight(color, intensity, scope);
+  const light = new THREE.PointLight(colorlight, intensity, scope);
 
   return sollar.add(light);
 };
