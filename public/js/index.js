@@ -13,18 +13,39 @@ const mouseSen = 1;
 const keys = {};
 let mousepressed = false;
 let mouseOvers = [];
+let teleportIndex = '0';
 
 const logger = {};
 
 onkeydown = onkeyup = (e) => {
-  // console.log('e.keyCode', e.keyCode);
-  keys[e.keyCode] = e.type === 'keydown';
+  const k = e.keyCode;
+  // console.log('e.keyCode', k);
+  keys[k] = e.type === 'keydown';
   if (e.type === 'keydown') {
-    if (e.keyCode == current_controls.logger) console.log(logger);
-    if (e.keyCode == current_controls.timeSpeed.slowDown) timeSpeedMultiplicator > -50 ? timeSpeedMultiplicator -= 1 : null;
-    if (e.keyCode == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 50 ? timeSpeedMultiplicator += 1 : null;
-    if (e.keyCode == current_controls.camera.speedUp) speed += speed / 2;
-    if (e.keyCode == current_controls.camera.slowDown) speed -= speed / 2;
+    if (k == current_controls.logger) console.log(logger);
+    if (k == current_controls.timeSpeed.slowDown) timeSpeedMultiplicator > -50 ? timeSpeedMultiplicator -= 1 : null;
+    if (k == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 50 ? timeSpeedMultiplicator += 1 : null;
+    if (k == current_controls.camera.speedUp) speed += speed / 2;
+    if (k == current_controls.camera.slowDown) speed -= speed / 2;
+
+    if (k == current_controls.camera.teleportToNextIndex && parseInt(teleportIndex, 10) + 1 <= univers.length) {
+      teleportIndex = parseInt(teleportIndex, 10) + 1;
+      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
+    }
+    if (k == current_controls.camera.teleportToPrevIndex && teleportIndex - 1 > 0) {
+      teleportIndex = parseInt(teleportIndex, 10) - 1;
+      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
+    }
+
+    if (k >= 48 && k <= 57) {
+      const num = k - 48;
+      teleportIndex += num.toString(10);
+    }
+    if (k === 13 && univers[teleportIndex - 1]) {
+      const o = univers[teleportIndex - 1];
+      teleportTo(o);
+    }
+    if (k === 8 || k === 13) teleportIndex = '0';
   }
 
 };
@@ -150,6 +171,10 @@ const animate = () => {
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
+
+  // logger
+  logger.camPos = camera.position;
+  logger.univers = univers;
 
 };
 
