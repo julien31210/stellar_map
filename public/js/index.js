@@ -28,13 +28,13 @@ onkeydown = onkeyup = (e) => {
     if (k == current_controls.camera.speedUp) speed += speed / 2;
     if (k == current_controls.camera.slowDown) speed -= speed / 2;
 
-    if (k == current_controls.camera.teleportToNextIndex && teleportIndex - 1 < univers.length - 1) {
+    if (k == current_controls.camera.teleportToNextIndex && parseInt(teleportIndex, 10) + 1 <= univers.length) {
       teleportIndex = parseInt(teleportIndex, 10) + 1;
-      teleportTo(univers[teleportIndex - 1]);
+      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
     }
     if (k == current_controls.camera.teleportToPrevIndex && teleportIndex - 1 > 0) {
       teleportIndex = parseInt(teleportIndex, 10) - 1;
-      teleportTo(univers[teleportIndex - 1]);
+      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
     }
 
     if (k >= 48 && k <= 57) {
