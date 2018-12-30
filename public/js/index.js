@@ -13,7 +13,7 @@ const mouseSen = 1;
 const keys = {};
 let mousepressed = false;
 let mouseOvers = [];
-let teleportIndex = '';
+let teleportIndex = '0';
 
 const logger = {};
 
@@ -27,6 +27,15 @@ onkeydown = onkeyup = (e) => {
     if (k == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 50 ? timeSpeedMultiplicator += 1 : null;
     if (k == current_controls.camera.speedUp) speed += speed / 2;
     if (k == current_controls.camera.slowDown) speed -= speed / 2;
+
+    if (k == current_controls.camera.teleportToNextIndex && teleportIndex - 1 < univers.length - 1) {
+      teleportIndex = parseInt(teleportIndex, 10) + 1;
+      teleportTo(univers[teleportIndex - 1]);
+    }
+    if (k == current_controls.camera.teleportToPrevIndex && teleportIndex - 1 > 0) {
+      teleportIndex = parseInt(teleportIndex, 10) - 1;
+      teleportTo(univers[teleportIndex - 1]);
+    }
 
     if (k >= 48 && k <= 57) {
       const num = k - 48;

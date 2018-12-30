@@ -18,6 +18,8 @@ const controls = {
     camera: {
       speedUp: '84',
       slowDown: '71',
+      teleportToNextIndex: '39',
+      teleportToPrevIndex: '37'
     },
   },
   azerty: {
@@ -38,7 +40,9 @@ const controls = {
     },
     camera: {
       speedUp: '84',
-      slowDown: '71'
+      slowDown: '71',
+      teleportToNextIndex: '39',
+      teleportToPrevIndex: '37'
     },
   }
 };
