@@ -45,7 +45,7 @@ onkeydown = onkeyup = (e) => {
       const o = univers[teleportIndex - 1];
       teleportTo(o);
     }
-    if (k === 8 || k === 13) teleportIndex = '';
+    if (k === 8 || k === 13) teleportIndex = '0';
   }
 
 };
