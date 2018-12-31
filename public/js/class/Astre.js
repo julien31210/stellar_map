@@ -61,6 +61,10 @@ class Astre {
     this.orbitObj.parent = stellarParent;
   }
 
+  setBaseRadialPosition(rad) {
+    this.radialPosition = rad;
+  }
+
   animate(delta) {
     if (this.orbitObj && this.orbitObj.parent) {
       const { nominalRadiantSpeed, orbitObj: { parent, distance, eccentricity, tilt } } = this;
