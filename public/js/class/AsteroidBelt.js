@@ -1,12 +1,9 @@
 
 class AsteroiBelt extends Astre {
-  constructor({ radius, color, type, mass, orbit }) {
-    super({ radius, color, type, mass, orbit });
-  }
 
   initThreeObj() {
     const { radius, color } = this;
-    const { nb, eccentricity, tilt, distance, aprox: aproxValues } = this.orbitObj;
+    const { nb, eccentricity, tilt, distance, aprox: aproxValues } = this.orbit;
 
     const beltCenter = new THREE.Object3D();
     const asteroids = [];
@@ -29,8 +26,8 @@ class AsteroiBelt extends Astre {
     }
 
     this.threeObj = beltCenter;
-    this.orbitObj.asteroids = asteroids;
-    this.orbitObj.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100;
+    this.orbit.asteroids = asteroids;
+    this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100;
 
     this.threeObj.rotateX(tilt || 0);
     this.uuid = this.threeObj.uuid;
@@ -39,7 +36,7 @@ class AsteroiBelt extends Astre {
   }
 
   animate(delta) {
-    const { nominalRadiantSpeed, orbitObj: { parent, eccentricity, asteroids, thickness } } = this;
+    const { nominalRadiantSpeed, orbit: { parent, eccentricity, asteroids, thickness } } = this;
     const { cos, sin, PI } = Math;
     const radialStep = nominalRadiantSpeed * delta;
 

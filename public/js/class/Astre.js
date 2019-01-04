@@ -1,34 +1,45 @@
 
 class Astre {
-  constructor({ radius, color, type, mass, orbit }) {
+  constructor(args) {
+    // { radius, color, type, mass, orbit }
     // DOC
     // orbit = {
     //   parent = orbital direct parent,
     //   distance = distance between parent and this astral object,
     // }
 
-    this.mass = mass;
-    this.type = type;
-    this.radius = radius;
-    this.color = color;
-    this.orbitObj = orbit;
+    Object.keys(args)
+      .forEach((key) => {
+        this[key] = args[key];
+      });
+
+    if (typeof this.preconstruct === 'function') this.preconstruct();
 
     this.init();
+  }
 
+  orbitAround(stellarParent) {
+    const { sqrt, PI } = Math;
+    if (stellarParent) {
+      this.orbit.parent = stellarParent;
+    }
+    if (this.orbit.parent) {
+
+      const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbit.parent.mass / this.orbit.distance) / dimentionsDivider;
+      const orbitPeriod = PI * 2 * this.orbit.distance / orbitSpeed;
+
+      this.nominalRadiantSpeed = PI / orbitPeriod;
+    }
   }
 
   init() {
 
-    if (this.orbitObj && this.orbitObj.parent && this.orbitObj.parent.mass && this.orbitObj.distance) {
-      const { sqrt, PI } = Math;
+    this.radialPosition = Math.PI;
 
-      const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbitObj.parent.mass / this.orbitObj.distance) / dimentionsDivider;
-      const orbitPeriod = PI * 2 * this.orbitObj.distance / orbitSpeed;
-
-      this.radialPosition = PI;
-      this.nominalRadiantSpeed = PI / orbitPeriod;
+    if (this.orbit && this.orbit.parent) {
+      this.orbitAround(this.orbit.parent);
     }
-
+    this.logMySelf();
     // this.logMySelf();
     this.initThreeObj();
   }
@@ -39,8 +50,7 @@ class Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbitObj;
-
+    const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbit;
     // make a sphere and put it in threeObj
     const geometry = new THREE.SphereGeometry(radius + 2, (radius / 20) + 50, (radius / 20) + 50);
     const material = new THREE.MeshStandardMaterial({
@@ -49,16 +59,13 @@ class Astre {
     this.threeObj = new THREE.Mesh(geometry, material);
 
     // calculate Orbit things
-    this.orbitObj.eccentricity = (aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100) || 0;
-    this.orbitObj.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
-    this.orbitObj.tilt = aprox(tilt, aproxValues && aproxValues.tilt) || 0;
+    this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) || 0;
+    this.orbit.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
+    this.orbit.tilt = aprox(tilt, aproxValues && aproxValues.tilt) || 0;
 
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
-  }
 
-  orbit(stellarParent) {
-    this.orbitObj.parent = stellarParent;
   }
 
   setBaseRadialPosition(rad) {
@@ -66,17 +73,18 @@ class Astre {
   }
 
   animate(delta) {
-    if (this.orbitObj && this.orbitObj.parent) {
-      const { nominalRadiantSpeed, orbitObj: { parent, distance, eccentricity, tilt } } = this;
-      const { cos, sin, PI } = Math;
+    if (this.orbit && this.orbit.parent) {
+      const { nominalRadiantSpeed, orbit: { parent, distance, eccentricity, tilt } } = this;
+      const { cos, sin, PI, abs } = Math;
 
       const radialStep = nominalRadiantSpeed * delta;
       if (radialStep !== 0) this.radialPosition += radialStep;
       if (this.radialPosition > PI * 100) this.radialPosition -= PI * 100;
 
-      this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * eccentricity);
+      this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * abs(eccentricity));
       this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * distance;
       this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * (tilt / 100);
     }
+    if (this.nestedAnimate && typeof this.nestedAnimate === 'function') this.nestedAnimate(delta);
   }
 }
