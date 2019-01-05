@@ -40,7 +40,6 @@ class Astre {
       this.orbitAround(this.orbit.parent);
     }
     this.logMySelf();
-    // this.logMySelf();
     this.initThreeObj();
   }
 

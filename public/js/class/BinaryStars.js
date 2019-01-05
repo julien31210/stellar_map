@@ -3,8 +3,6 @@ class BinaryStars extends Astre {
 
 
   initThreeObj() {
-    // const { radius, color } = this;
-
     this.threeObj = new THREE.Object3D();
 
     this.mass = this.star1.mass + this.star2.mass;
@@ -18,7 +16,6 @@ class BinaryStars extends Astre {
     this.star2.orbitAround(this);
     scene.add(this.star2.threeObj);
 
-    // this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100;
     this.threeObj.rotateX(this.tilt || 0);
     this.uuid = this.threeObj.uuid;
 
