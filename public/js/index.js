@@ -29,6 +29,9 @@ const init = () => {
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
+  // AmbientLight really low light
+  const ambient = new THREE.AmbientLight(0x060606);
+  scene.add(ambient);
 
   mouse = new THREE.Vector2();
   raycaster = new THREE.Raycaster();
