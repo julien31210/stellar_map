@@ -60,7 +60,7 @@ const createSollarSystem = () => {
       parent: earth,
       distance: 3.84 * (10 ** 5) / dimentionsDivider,
       eccentricity: .1,
-      tilt: .0514,
+      tilt: 5.14,
     },
     mass: (7.36 * (10 ** 22)) / dimentionsDivider
   });
