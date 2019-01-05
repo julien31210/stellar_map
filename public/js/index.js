@@ -77,7 +77,7 @@ const animate = () => {
   });
 
   raycaster.setFromCamera(mouse, camera);
-  mouseOvers = raycaster.intersectObjects(scene.children);
+  mouseOvers = raycaster.intersectObjects(scene.children, true);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
