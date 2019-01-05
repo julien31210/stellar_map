@@ -1,5 +1,5 @@
 const controls = {
-  qwerty: {
+  azerty: {
     forward: '90',
     back: '83',
     right: '68',
@@ -22,7 +22,7 @@ const controls = {
       teleportToPrevIndex: '37'
     },
   },
-  azerty: {
+  qwerty: {
     forward: '87',
     back: '83',
     right: '68',
