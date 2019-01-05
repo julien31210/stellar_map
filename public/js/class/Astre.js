@@ -24,6 +24,12 @@ class Astre {
       this.orbit.parent = stellarParent;
     }
     if (this.orbit.parent) {
+      const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbit;
+
+      // calculate Orbit things
+      this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) || 0;
+      this.orbit.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
+      this.orbit.tilt = convert.radians(aprox(tilt, aproxValues && aproxValues.tilt) || 0);
 
       const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbit.parent.mass / this.orbit.distance) / dimentionsDivider;
       const orbitPeriod = PI * 2 * this.orbit.distance / orbitSpeed;
@@ -49,22 +55,14 @@ class Astre {
 
   initThreeObj() {
     const { radius, color } = this;
-    const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbit;
+
     // make a sphere and put it in threeObj
     const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 50, (radius / 20) + 50);
-    const material = new THREE.MeshStandardMaterial({
-      color,
-    });
+    const material = new THREE.MeshStandardMaterial({ color });
     this.threeObj = new THREE.Mesh(geometry, material);
-
-    // calculate Orbit things
-    this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) || 0;
-    this.orbit.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
-    this.orbit.tilt = convert.radians(aprox(tilt, aproxValues && aproxValues.tilt) || 0);
 
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
-
   }
 
   setBaseRadialPosition(rad) {
