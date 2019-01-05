@@ -52,7 +52,7 @@ class Astre {
     const { radius, color } = this;
     const { eccentricity, distance, tilt, aprox: aproxValues } = this.orbit;
     // make a sphere and put it in threeObj
-    const geometry = new THREE.SphereGeometry(radius + 2, (radius / 20) + 50, (radius / 20) + 50);
+    const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 50, (radius / 20) + 50);
     const material = new THREE.MeshStandardMaterial({
       color,
     });

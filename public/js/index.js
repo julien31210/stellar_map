@@ -4,7 +4,10 @@ let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
 let delta = 0;
 const clock = new THREE.Clock();
 const univers = [];
+
 const baseTimeSpeed = 1; // how many seconds pass in one second
+const dimentionsDivider = 1000;
+
 const mouseSen = 1;
 const keys = {};
 let mouseOvers = [];
@@ -29,6 +32,9 @@ const init = () => {
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
+  // AmbientLight really low light
+  const ambient = new THREE.AmbientLight(0x060606);
+  scene.add(ambient);
 
   mouse = new THREE.Vector2();
   raycaster = new THREE.Raycaster();
@@ -43,7 +49,7 @@ const init = () => {
 
 let frameCount = 0;
 setInterval(() => {
-  console.log('frameCount', frameCount);
+  logger.frameCount = frameCount;
   frameCount = 0;
 }, 1000);
 
@@ -77,7 +83,7 @@ const animate = () => {
   });
 
   raycaster.setFromCamera(mouse, camera);
-  mouseOvers = raycaster.intersectObjects(scene.children);
+  mouseOvers = raycaster.intersectObjects(scene.children, true);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
