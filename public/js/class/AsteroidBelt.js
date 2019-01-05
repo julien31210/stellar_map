@@ -42,7 +42,7 @@ class AsteroiBelt extends Astre {
     const radialStep = nominalRadiantSpeed * delta;
 
     if (radialStep !== 0) this.radialPosition += radialStep;
-    if (this.radialPosition > PI * 2) this.radialPosition -= (2 * PI) * (this.radialPosition % (2 * PI));
+    if (this.radialPosition > PI * 2) this.radialPosition -= PI * 2;
 
 
     asteroids.forEach((astero) => {
