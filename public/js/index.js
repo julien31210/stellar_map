@@ -4,7 +4,10 @@ let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
 let delta = 0;
 const clock = new THREE.Clock();
 const univers = [];
+
 const baseTimeSpeed = 1; // how many seconds pass in one second
+const dimentionsDivider = 1000;
+
 const mouseSen = 1;
 const keys = {};
 let mouseOvers = [];
