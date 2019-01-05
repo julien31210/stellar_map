@@ -46,7 +46,7 @@ const init = () => {
 
 let frameCount = 0;
 setInterval(() => {
-  console.log('frameCount', frameCount);
+  logger.frameCount = frameCount;
   frameCount = 0;
 }, 1000);
 
