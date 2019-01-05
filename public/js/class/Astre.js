@@ -61,7 +61,7 @@ class Astre {
     // calculate Orbit things
     this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) || 0;
     this.orbit.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
-    this.orbit.tilt = aprox(tilt, aproxValues && aproxValues.tilt) || 0;
+    // this.orbit.tilt = aprox(tilt, aproxValues && aproxValues.tilt) || 0;
 
     this.uuid = this.threeObj.uuid;
     scene.add(this.threeObj);
@@ -79,11 +79,11 @@ class Astre {
 
       const radialStep = nominalRadiantSpeed * delta;
       if (radialStep !== 0) this.radialPosition += radialStep;
-      if (this.radialPosition > PI * 100) this.radialPosition -= PI * 100;
+      if (this.radialPosition > PI * 2) this.radialPosition -= PI * 2;
 
       this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * abs(eccentricity));
-      this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * distance;
-      this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * (tilt / 100);
+      this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * (distance - (distance * sin(convert.radians(tilt))));
+      this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * sin(convert.radians(tilt));
     }
     if (this.nestedAnimate && typeof this.nestedAnimate === 'function') this.nestedAnimate(delta);
   }

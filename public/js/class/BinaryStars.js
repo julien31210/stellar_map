@@ -1,6 +1,7 @@
 
 class BinaryStars extends Astre {
 
+
   initThreeObj() {
     // const { radius, color } = this;
 
@@ -11,11 +12,11 @@ class BinaryStars extends Astre {
 
     this.star1.radialPosition = 0;
     this.star1.orbitAround(this);
-    this.threeObj.add(this.star1.threeObj);
+    scene.add(this.star1.threeObj);
 
     this.star2.radialPosition = Math.PI;
     this.star2.orbitAround(this);
-    this.threeObj.add(this.star2.threeObj);
+    scene.add(this.star2.threeObj);
 
     // this.orbit.eccentricity = aprox(eccentricity, aproxValues && aproxValues.eccentricity) / 100;
     this.threeObj.rotateX(this.tilt || 0);
