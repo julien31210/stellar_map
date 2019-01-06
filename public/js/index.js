@@ -60,14 +60,14 @@ const animate = () => {
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-      if (k === current_controls.forward) camera.translateZ(-speed);
-      if (k === current_controls.back) camera.translateZ(speed);
-      if (k === current_controls.right) camera.translateX(speed);
-      if (k === current_controls.left) camera.translateX(-speed);
-      if (k === current_controls.up) camera.translateY(speed);
-      if (k === current_controls.down) camera.translateY(-speed);
-      if (k === current_controls.roll.left) camera.rotateZ(Math.PI / mouseSen / 75);
-      if (k === current_controls.roll.right) camera.rotateZ(-Math.PI / mouseSen / 75);
+      if (k === current_controls.forward) camera.translateZ(-speed * delta);
+      if (k === current_controls.back) camera.translateZ(speed * delta);
+      if (k === current_controls.right) camera.translateX(speed * delta);
+      if (k === current_controls.left) camera.translateX(-speed * delta);
+      if (k === current_controls.up) camera.translateY(speed * delta);
+      if (k === current_controls.down) camera.translateY(-speed * delta);
+      if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
+      if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
     }
     // remove key from object
   });
