@@ -2,27 +2,27 @@
 const createSollarSystem = () => {
   const sun = new Star({
     name: 'sun',
-    radius: 3.957 * (10 ** 6) / dimentionsDivider,
+    radius: 6.95508 * (10 ** 5) / dimentionsDivider, /// 6.95 508
     color: 0xf0f00f,
-    mass: (1.989 * (10 ** 30)) / dimentionsDivider,
+    mass: ((1.989 / 2) * (10 ** 30)) / dimentionsDivider,
     type: 'star',
     orbit: {
-      eccentricity: .3,
+      eccentricity: .4,
       tilt: 90,
-      distance: (6 * (10 ** 6)) / dimentionsDivider,
+      distance: (2 * (10 ** 6)) / dimentionsDivider,
     }
   });
   univers.push(sun);
   const sun2 = new Star({
     name: 'sun2',
-    radius: 3.957 * (10 ** 6) / dimentionsDivider,
+    radius: 6.95508 * (10 ** 5) / dimentionsDivider,
     color: 0xf0f00f,
-    mass: (1.989 * (10 ** 30)) / dimentionsDivider,
+    mass: ((1.989 / 2) * (10 ** 30)) / dimentionsDivider,
     type: 'star',
     orbit: {
-      eccentricity: -.3,
+      eccentricity: -.4,
       tilt: 90,
-      distance: (6 * (10 ** 6)) / dimentionsDivider,
+      distance: (2 * (10 ** 6)) / dimentionsDivider,
     }
   });
   univers.push(sun2);
@@ -44,7 +44,7 @@ const createSollarSystem = () => {
     type: 'planet',
     orbit: {
       parent: binaryStars,
-      distance: 1.49 * (10 ** 8) / dimentionsDivider,
+      distance: 1.496 * (10 ** 8) / dimentionsDivider,
       tilt: 0,
     },
     mass: 5.972 * (10 ** 24) / dimentionsDivider
@@ -53,7 +53,7 @@ const createSollarSystem = () => {
 
   const moon = new Astre({
     name: 'moon',
-    radius: 1.737 * (10 ** 3) / dimentionsDivider,
+    radius: 3.474 * (10 ** 3) / dimentionsDivider,
     color: 0xcccccc,
     type: 'planet',
     orbit: {
