@@ -2,7 +2,7 @@
 
 const current_controls = controls.azerty;
 
-let speed = 250; // camera mouvement speed
+let speed = 7000; // camera mouvement speed in km/s
 let mousepressed = false;
 let teleportIndex = '0';
 

@@ -5,8 +5,7 @@ let delta = 0;
 const clock = new THREE.Clock();
 const univers = [];
 
-const baseTimeSpeed = 1; // how many seconds pass in one second
-const dimentionsDivider = 1000;
+const baseTimeSpeed = .1; // how many seconds pass in one second
 
 const mouseSen = 1;
 const keys = {};
@@ -28,7 +27,7 @@ const init = () => {
   scene = new THREE.Scene();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, 100000000);
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, toKm('15parsecs'));
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
