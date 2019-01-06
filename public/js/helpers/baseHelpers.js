@@ -29,3 +29,30 @@ const randOnArray = (arr) => {
   const r = Math.round(Math.random() * (arr.length - 1));
   return arr[r];
 };
+
+const dimentionDivider = 1000;
+// NUMBERS
+const toKm = (n) => { // translate a string number like 15parsecs to kilometers
+  // 15,3parsecs 78,35 M 1030 1.75m
+  if (!n || Number.isInteger(n)) return n / dimentionDivider;
+  const str = n.toString();
+  let r = str;
+  if (str.includes(',')) {
+    const nums = str.split(/[,|.]/);
+    const unity = nums[0];
+    const decimales = parseInt(nums[1], 10) / (10 ** parseInt(nums[1], 10).toString().length);
+
+    r = parseInt(unity, 10) + decimales;
+  } else {
+    r = parseFloat(str, 10);
+  }
+
+  if (str.includes('parsecs') || str.includes('pc')) r *= 3.086 * (10 ** 13);
+  else if (str.includes('m') || str.includes('meter')) r /= 1000;
+  else if (str.includes('M') || str.includes('million')) r *= 10 ** 6;
+  else if (str.includes('B') || str.includes('billion')) r *= 3.086 * (10 ** 13); // 9 461 B
+  else if (str.includes('ly') || str.includes('LY')) r *= 3.086 * (10 ** 13); // 9 461 B
+  else if (str.includes('au') || str.includes('AU')) r *= 150 * (10 ** 6);
+
+  return r / dimentionDivider;
+};
