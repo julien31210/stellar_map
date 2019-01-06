@@ -1,7 +1,7 @@
 
 const teleportTo = (o) => {
   o.threeObj.add(camera);
-  camera.position.set(0, 0, o.radius * 6);
+  camera.position.set(-o.radius * 6, 0, 0);
   camera.lookAt(o.threeObj.position);
 
 };

@@ -2,27 +2,27 @@
 const createSollarSystem = () => {
   const sun = new Star({
     name: 'sun',
-    radius: 6.95508 * (10 ** 5) / dimentionsDivider, /// 6.95 508
+    radius: toKm(695508), // 6.95 508
     color: 0xf0f00f,
-    mass: ((1.989 / 2) * (10 ** 30)) / dimentionsDivider,
+    mass: ((1.989 / 2) * (10 ** 30)),
     type: 'star',
     orbit: {
       eccentricity: .4,
       tilt: 90,
-      distance: (2 * (10 ** 6)) / dimentionsDivider,
+      distance: toKm('2M'),
     }
   });
   univers.push(sun);
   const sun2 = new Star({
     name: 'sun2',
-    radius: 6.95508 * (10 ** 5) / dimentionsDivider,
+    radius: toKm(695508),
     color: 0xf0f00f,
-    mass: ((1.989 / 2) * (10 ** 30)) / dimentionsDivider,
+    mass: ((1.989 / 2) * (10 ** 30)),
     type: 'star',
     orbit: {
       eccentricity: -.4,
       tilt: 90,
-      distance: (2 * (10 ** 6)) / dimentionsDivider,
+      distance: toKm('2M'),
     }
   });
   univers.push(sun2);
@@ -39,42 +39,42 @@ const createSollarSystem = () => {
 
   const earth = new Astre({
     name: 'earth',
-    radius: 6.371 * (10 ** 3) / dimentionsDivider,
+    radius: toKm(6371),
     color: 0x00ffff,
     type: 'planet',
     orbit: {
       parent: binaryStars,
-      distance: 1.496 * (10 ** 8) / dimentionsDivider,
+      distance: toKm('149,6 M'),
       tilt: 0,
     },
-    mass: 5.972 * (10 ** 24) / dimentionsDivider
+    mass: 5.972 * (10 ** 24)
   });
   univers.push(earth);
 
   const moon = new Astre({
     name: 'moon',
-    radius: 3.474 * (10 ** 3) / dimentionsDivider,
+    radius: toKm(3474),
     color: 0xcccccc,
     type: 'planet',
     orbit: {
       parent: earth,
-      distance: 3.84 * (10 ** 5) / dimentionsDivider,
+      distance: toKm(384000),
       eccentricity: .1,
       tilt: 5.14,
     },
-    mass: (7.36 * (10 ** 22)) / dimentionsDivider
+    mass: (7.36 * (10 ** 22))
   });
   univers.push(moon);
 
   // const asteroidBelt = new AsteroiBelt({
   //   name: 'asteroidBelt',
-  //   radius: 30000 / dimentionsDivider,
+  //   radius: 30000,
   //   color: 0xcccccc,
   //   type: 'asteroid belt',
   //   orbit: {
   //     parent: sun,
-  //     distance: (7.5 * (10 ** 6)) / dimentionsDivider,
-  //     // distance: (1.75 * (10 ** 7)) / dimentionsDivider,
+  //     distance: (7.5 * (10 ** 6)),
+  //     // distance: (1.75 * (10 ** 7)),
   //     nb: 1000,
   //     eccentricity: .1,
   //     tilt: 90,

@@ -1,8 +1,8 @@
 
 
-const current_controls = controls.azerty;
+const current_controls = controls.qwerty;
 
-let speed = 250; // camera mouvement speed
+let speed = 7000; // camera mouvement speed in km/s
 let mousepressed = false;
 let teleportIndex = '0';
 
@@ -58,17 +58,16 @@ onmousemove = (e) => {
 oncontextmenu = (e) => {
   e.preventDefault();
   mousepressed = false;
+  console.log(mouseOvers)
   if (mouseOvers.length) {
-    cameraClipedTo = mouseOvers[0].object;
 
     univers.forEach((el) => {
-      if (cameraClipedTo && (cameraClipedTo.uuid === el.uuid)) {
-        el.threeObj.add(camera);
-        // raycaster.setFromCamera(mouse, camera);
+      if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
+        console.log(mouseOvers[0]);
+        if (typeof mouseOvers[0].onRightClick === 'function') mouseOvers[0].onRightClick();
       }
     });
 
-    console.log(mouseOvers[0].object);
   }
 };
 
@@ -78,6 +77,14 @@ onmousedown = (e) => {
   if (e.type !== 'contextmenu') {
     mousepressed = true;
 
+    if (mouseOvers.length) {
+      univers.forEach((el) => {
+        if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
+          console.log(mouseOvers[0]);
+          if (typeof mouseOvers[0].onLeftClick === 'function') mouseOvers[0].onLeftClick();
+        }
+      });
+    }
   }
 };
 onmouseup = (e) => {
@@ -89,5 +96,6 @@ onmousewheel = (e) => {
 
   if (e.deltaY > 0) speed -= speed / 2;
   if (e.deltaY < 0) speed += speed / 2;
+  logger.cameraSpeed = speed;
 };
 

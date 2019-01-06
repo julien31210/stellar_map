@@ -31,7 +31,10 @@ class Astre {
       this.orbit.distance = aprox(distance, aproxValues && aproxValues.distance) || 0;
       this.orbit.tilt = convert.radians(aprox(tilt, aproxValues && aproxValues.tilt) || 0);
 
-      const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbit.parent.mass / this.orbit.distance) / dimentionsDivider;
+      // speed of orbit in m/s to km/s
+      console.log(this.name, this.orbit.distance, this.radius);
+      const orbitSpeed = sqrt(6.67 * (10 ** -11) * this.orbit.parent.mass / this.orbit.distance) / 1000;
+      // orbital period in s
       const orbitPeriod = PI * 2 * this.orbit.distance / orbitSpeed;
 
       this.nominalRadiantSpeed = PI / orbitPeriod;
@@ -57,7 +60,7 @@ class Astre {
     const { radius, color } = this;
 
     // make a sphere and put it in threeObj
-    const geometry = new THREE.SphereGeometry(radius, (radius / 20) + 50, (radius / 20) + 50);
+    const geometry = new THREE.SphereGeometry(radius, (radius / (200000 * dimentionDivider)) + 50, (radius / (200000 * dimentionDivider)) + 50);
     const material = new THREE.MeshStandardMaterial({ color });
     this.threeObj = new THREE.Mesh(geometry, material);
 
