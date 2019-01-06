@@ -7,9 +7,9 @@ const createSollarSystem = () => {
     mass: (1.989 * (10 ** 30)) / dimentionsDivider,
     type: 'star',
     orbit: {
-      eccentricity: .4,
-      tilt: 45,
-      distance: (15 * (10 ** 6)) / dimentionsDivider,
+      eccentricity: .3,
+      tilt: 90,
+      distance: (6 * (10 ** 6)) / dimentionsDivider,
     }
   });
   univers.push(sun);
@@ -20,9 +20,9 @@ const createSollarSystem = () => {
     mass: (1.989 * (10 ** 30)) / dimentionsDivider,
     type: 'star',
     orbit: {
-      eccentricity: -.4,
-      tilt: 45,
-      distance: (15 * (10 ** 6)) / dimentionsDivider,
+      eccentricity: -.3,
+      tilt: 90,
+      distance: (6 * (10 ** 6)) / dimentionsDivider,
     }
   });
   univers.push(sun2);
