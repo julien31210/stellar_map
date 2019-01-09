@@ -1,4 +1,4 @@
-let renderer, scene, camera, lastRot, raycaster, mouse, cameraClipedTo;
+let renderer, scene, sceneHUD, camera, lastRot, raycaster, mouse, cameraClipedTo;
 
 
 let delta = 0;
@@ -10,6 +10,7 @@ const baseTimeSpeed = .1; // how many seconds pass in one second
 const mouseSen = 1;
 const keys = {};
 let mouseOvers = [];
+let menuMouseOvers = [];
 
 const logger = {};
 
@@ -25,6 +26,8 @@ const init = () => {
 
   // on initialise la scène
   scene = new THREE.Scene();
+  sceneHUD = new THREE.Scene();
+
 
   // on initialise la camera que l'on place ensuite sur la scène
   camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs'));
@@ -37,6 +40,7 @@ const init = () => {
 
   mouse = new THREE.Vector2();
   raycaster = new THREE.Raycaster();
+  initHUD();
 
 
   createSollarSystem(2);
@@ -78,6 +82,7 @@ const animate = () => {
 
   raycaster.setFromCamera(mouse, camera);
   mouseOvers = raycaster.intersectObjects(scene.children, true);
+  menuMouseOvers = raycaster.intersectObjects(sceneHUD.children);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
@@ -86,6 +91,8 @@ const animate = () => {
   logger.camPos = camera.position;
   logger.univers = univers;
   logger.cameraSpeed = `${speed}Km/s`;
+  logger.mouseOvers = mouseOvers;
+  logger.menu = menuMouseOvers;
 
   // on appel la fonction animate() récursivement à chaque frame
   requestAnimationFrame(animate);

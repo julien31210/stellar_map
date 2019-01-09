@@ -63,8 +63,7 @@ oncontextmenu = (e) => {
 
     univers.forEach((el) => {
       if (cameraClipedTo && (cameraClipedTo.uuid === el.uuid)) {
-        el.threeObj.add(camera);
-        // raycaster.setFromCamera(mouse, camera);
+        openWindow(el.type);
       }
     });
 
@@ -90,4 +89,3 @@ onmousewheel = (e) => {
   if (e.deltaY > 0) speed -= speed / 2;
   if (e.deltaY < 0) speed += speed / 2;
 };
-
