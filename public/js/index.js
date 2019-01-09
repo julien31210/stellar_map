@@ -27,7 +27,7 @@ const init = () => {
   scene = new THREE.Scene();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, toKm('15parsecs'));
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs'));
   camera.position.set(0, 0, 700);
   scene.add(camera);
 
@@ -68,12 +68,7 @@ const animate = () => {
       if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
       if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
     }
-    // remove key from object
   });
-
-
-  // on appel la fonction animate() récursivement à chaque frame
-  requestAnimationFrame(animate);
 
   univers.forEach((el) => {
     let d = 0;
@@ -90,7 +85,10 @@ const animate = () => {
   // logger
   logger.camPos = camera.position;
   logger.univers = univers;
+  logger.cameraSpeed = `${speed}Km/s`;
 
+  // on appel la fonction animate() récursivement à chaque frame
+  requestAnimationFrame(animate);
 };
 
 init();

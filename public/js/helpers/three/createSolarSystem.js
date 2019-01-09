@@ -2,27 +2,27 @@
 const createSollarSystem = () => {
   const sun = new Star({
     name: 'sun',
-    radius: toKm(695508), // 6.95 508
+    radius: convert.to(695508), // 6.95 508
     color: 0xf0f00f,
     mass: ((1.989 / 2) * (10 ** 30)),
     type: 'star',
     orbit: {
       eccentricity: .4,
       tilt: 90,
-      distance: toKm('3M'),
+      distance: convert.to('3M'),
     }
   });
   univers.push(sun);
   const sun2 = new Star({
     name: 'sun2',
-    radius: toKm(695508),
+    radius: convert.to(695508),
     color: 0xf0f00f,
     mass: ((1.989 / 2) * (10 ** 30)),
     type: 'star',
     orbit: {
       eccentricity: -.4,
       tilt: 90,
-      distance: toKm('3M'),
+      distance: convert.to('3M'),
     }
   });
   univers.push(sun2);
@@ -39,12 +39,12 @@ const createSollarSystem = () => {
 
   const earth = new Astre({
     name: 'earth',
-    radius: toKm(6371),
+    radius: convert.to(6371),
     color: 0x00ffff,
     type: 'planet',
     orbit: {
       parent: binaryStars,
-      distance: toKm('149,6 M'),
+      distance: convert.to('149,6 M'),
       tilt: 0,
     },
     mass: 5.972 * (10 ** 24)
@@ -53,12 +53,12 @@ const createSollarSystem = () => {
 
   const moon = new Astre({
     name: 'moon',
-    radius: toKm(3474),
+    radius: convert.to(3474),
     color: 0xcccccc,
     type: 'planet',
     orbit: {
       parent: earth,
-      distance: toKm(384000),
+      distance: convert.to(384000),
       eccentricity: .1,
       tilt: 5.14,
     },
