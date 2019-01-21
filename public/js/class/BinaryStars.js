@@ -22,8 +22,35 @@ class BinaryStars extends Astre {
     scene.add(this.threeObj);
   }
 
-  nestedAnimate(delta) {
-    this.star1.animate(delta);
-    this.star2.animate(delta);
+  animate(delta) {
+    if (this.orbit && this.orbit.parent) {
+
+      const { orbit: { parent } } = this;
+
+      this.threeObj.position.x = parent.threeObj.position.x;
+      this.threeObj.position.z = parent.threeObj.position.z;
+      this.threeObj.position.y = parent.threeObj.position.y;
+    }
+    if (this.childs && this.childs.length) {
+      // console.log(this.childs);
+      this.childs.forEach((el) => {
+        el.animate(delta);
+      });
+    }
+    // console.log('=====================');
+  }
+
+  turnLightOn() {
+    this.childs.forEach((el) => {
+      console.log('ok');
+      if (el.light && !el.lightStats) el.turnLightOn();
+    });
+  }
+
+  turnLightOff() {
+    this.childs.forEach((el) => {
+      console.log('ok');
+      if (el.light && el.lightStats) el.turnLightOff();
+    });
   }
 }
