@@ -10,15 +10,15 @@ class Galaxy extends Astre {
 
     this.childs = [];
 
-    for (let i = 1; i <= 30; i += 1) {
+    for (let i = 1; i <= 500; i += 3) {
       const sys = new System({
         name: `solarSys${i}`,
         orbit: {
           parent: this,
           eccentricity: 0,
-          distance: convert.to(`${(i + 7) * 2}B`),
+          distance: convert.to(`${(i + 5)}B`),
           // tilt: 0,
-          tilt: randOnN(0, 30),
+          tilt: randOnN(0, 50),
         }
       });
     }

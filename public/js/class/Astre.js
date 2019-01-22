@@ -103,13 +103,12 @@ class Astre {
     }
 
     if (this.childs && this.childs.length) {
-      // console.log(this.childs);
       this.childs.forEach((el) => {
         el.animate(delta);
       });
     }
 
-    if (this.manageLights && camera && clock.getElapsedTime() > 4) this.manageLights(camera);
+    if (this.manageVisibility && camera && clock.getElapsedTime() > 4) this.manageVisibility(camera);
     // if (this.constructor.name === 'System') {
     //   this.childs.forEach((el) => {
     //     if (['Star', 'BinaryStars'].includes(el.constructor.name)) {
@@ -119,4 +118,21 @@ class Astre {
     // }
     // console.log('=====================');
   }
+
+  manageVisibility(camera) {
+    const { position: p } = this.threeObj;
+    const { position: cp } = camera;
+    const objVect = new THREE.Vector3(p.x, p.y, p.z);
+    const camVect = new THREE.Vector3(cp.x, cp.y, cp.z);
+
+    this.threeObj.getWorldPosition(objVect);
+    camera.getWorldPosition(camVect);
+    const d = camVect.distanceTo(objVect);
+
+    if (d > 6000 * this.radius) scene.remove(this.threeObj);
+    else scene.add(this.threeObj);
+
+    if (this.manageLight) this.manageLight(d);
+  }
+
 }
