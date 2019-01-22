@@ -90,7 +90,7 @@ class System extends Astre {
     const material = new THREE.MeshBasicMaterial();
     this.threeObj = new THREE.Mesh(geometry, material);
     this.threeObj.material.transparent = true;
-    this.threeObj.material.opacity = 0.15;
+    this.threeObj.material.opacity = 0.3;
 
     this.uuid = this.threeObj.uuid;
     this.radialPosition = Math.PI;
