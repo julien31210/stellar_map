@@ -2,8 +2,6 @@
 class System extends Astre {
   initThreeObj() {
 
-    console.log(this.name, this.orbit.tilt);
-
     const sun = new Star({
       name: 'sun',
       radius: convert.to(695508), // 6.95 508
@@ -80,9 +78,9 @@ class System extends Astre {
       earth,
       moon
     ].reduce((result, value) => {
-      if (result < value.orbit.distance) return value.orbit.distance + binaryStars.radius;
+      if (result < value.orbit.distance * 2) return value.orbit.distance * 2;
       return result;
-    }, 0) + binaryStars.radius;
+    }, 0);
 
     binaryStars.orbitAround(this);
 
@@ -94,7 +92,6 @@ class System extends Astre {
 
     this.uuid = this.threeObj.uuid;
     this.radialPosition = Math.PI;
-    console.log(this.radius, this.mass, this.childs);
     // const asteroidBelt = new AsteroiBelt({
     //   name: 'asteroidBelt',
     //   radius: 30000,

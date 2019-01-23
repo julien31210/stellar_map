@@ -36,7 +36,7 @@ class AsteroiBelt extends Astre {
     scene.add(this.threeObj);
   }
 
-  animate(delta) {
+  astreAnimate(delta) {
     const { nominalRadiantSpeed, orbit: { parent, eccentricity, asteroids, thickness, tilt } } = this;
     const { cos, sin, PI } = Math;
     const radialStep = nominalRadiantSpeed * delta;

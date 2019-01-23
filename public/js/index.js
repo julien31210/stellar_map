@@ -104,4 +104,6 @@ const animate = () => {
 };
 
 init();
-animate();
+(() => {
+  animate();
+})();
