@@ -10,28 +10,31 @@ class Galaxy extends Astre {
 
     this.childs = [];
 
-    for (let i = 1; i <= 30; i += 1) {
+    for (let i = 1; i <= 150; i += 1) {
       const sys = new System({
         name: `solarSys${i}`,
         orbit: {
           parent: this,
           eccentricity: 0,
-          distance: convert.to(`${(i + 7) * 2}B`),
+          distance: convert.to(`${i + 15}B`),
           // tilt: 0,
-          tilt: randOnN(0, 30),
+          tilt: randOnN(0, 50),
         }
       });
     }
 
 
-    this.childs.forEach((el, i) => {
+    this.radius = this.childs.reduce((result, value) => {
+      if (result < value.orbit.distance) return value.orbit.distance;
+      return result;
+    }, 0);
+
+    this.childs.forEach((el) => {
       this.mass += el.mass;
       // el.radialPosition = ((2 * Math.PI) / this.childs.length) * i;
     });
 
     this.childs.forEach(el => el.orbitAround(this));
 
-    scene.add(this.threeObj);
   }
-
 }

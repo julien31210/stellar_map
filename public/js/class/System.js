@@ -2,8 +2,6 @@
 class System extends Astre {
   initThreeObj() {
 
-    console.log(this.name, this.orbit.tilt);
-
     const sun = new Star({
       name: 'sun',
       radius: convert.to(695508), // 6.95 508
@@ -80,22 +78,20 @@ class System extends Astre {
       earth,
       moon
     ].reduce((result, value) => {
-      if (result < value.orbit.distance) return value.orbit.distance + binaryStars.radius;
+      if (result < value.orbit.distance * 2) return value.orbit.distance * 2;
       return result;
-    }, 0) + binaryStars.radius;
+    }, 0);
 
     binaryStars.orbitAround(this);
 
-    const geometry = new THREE.SphereGeometry(this.radius, 50, 50);
+    const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
     const material = new THREE.MeshBasicMaterial();
     this.threeObj = new THREE.Mesh(geometry, material);
     this.threeObj.material.transparent = true;
-    this.threeObj.material.opacity = 0.05;
+    this.threeObj.material.opacity = 0.3;
 
-    scene.add(this.threeObj);
     this.uuid = this.threeObj.uuid;
     this.radialPosition = Math.PI;
-    console.log(this.radius, this.mass, this.childs);
     // const asteroidBelt = new AsteroiBelt({
     //   name: 'asteroidBelt',
     //   radius: 30000,
@@ -121,16 +117,9 @@ class System extends Astre {
     // this.childs.push(asteroidBelt);
   }
 
-  manageLights(camera) {
-    const { position: p } = this.threeObj;
-    const { position: cp } = camera;
-    const objVect = new THREE.Vector3(p.x, p.y, p.z);
-    const camVect = new THREE.Vector3(cp.x, cp.y, cp.z);
+  manageLight(d) {
 
-    this.threeObj.getWorldPosition(objVect);
-    camera.getWorldPosition(camVect);
-
-    if (camVect.distanceTo(objVect) < this.radius) {
+    if (d < this.radius) {
 
       const turnLightOnRecurs = (el) => {
         if (el.light && !el.lightStats) {
@@ -140,7 +129,7 @@ class System extends Astre {
         if (el.childs) el.childs.forEach(turnLightOnRecurs);
       };
 
-      this.childs.forEach(el => turnLightOnRecurs(el));
+      this.childs.forEach(turnLightOnRecurs);
 
     } else {
 
@@ -152,43 +141,7 @@ class System extends Astre {
         if (el.childs) el.childs.forEach(turnLightOffRecurs);
       };
 
-      this.childs.forEach(el => turnLightOffRecurs(el));
+      this.childs.forEach(turnLightOffRecurs);
     }
   }
-
-  manageVisibility(camera) {
-    const { position: p } = this.threeObj;
-    const { position: cp } = camera;
-    const objVect = new THREE.Vector3(p.x, p.y, p.z);
-    const camVect = new THREE.Vector3(cp.x, cp.y, cp.z);
-
-    this.threeObj.getWorldPosition(objVect);
-    camera.getWorldPosition(camVect);
-
-    if (camVect.distanceTo(objVect) < this.radius) {
-
-      const turnLightOnRecurs = (el) => {
-        if (el.light && !el.lightStats) {
-          console.log(el.name, 'ON');
-          el.turnLightOn();
-        }
-        if (el.childs) el.childs.forEach(turnLightOnRecurs);
-      };
-
-      this.childs.forEach(el => turnLightOnRecurs(el));
-
-    } else {
-
-      const turnLightOffRecurs = (el) => {
-        if (el.light && el.lightStats) {
-          console.log(el.name, 'OFF');
-          el.turnLightOff();
-        }
-        if (el.childs) el.childs.forEach(turnLightOffRecurs);
-      };
-
-      this.childs.forEach(el => turnLightOffRecurs(el));
-    }
-  }
-
 }

@@ -14,6 +14,8 @@ class Astre {
       });
     this.childs = [];
     this.radialPosition = Math.PI;
+    this.on = false;
+    this.delayedDelta = 0;
 
     if (typeof this.preconstruct === 'function') this.preconstruct();
 
@@ -76,47 +78,82 @@ class Astre {
     this.threeObj = new THREE.Mesh(geometry, material);
 
     this.uuid = this.threeObj.uuid;
-    scene.add(this.threeObj);
   }
 
   setBaseRadialPosition(rad) {
     this.radialPosition = rad;
   }
 
-  animate(delta) {
-    // console.log('=====================');
-    // console.log(this.name);
+  astreAnimate(delta) {
+
+    // console.log(this.name, 'astreAnimate');
     if (this.orbit && this.orbit.parent) {
 
       const { nominalRadiantSpeed, orbit: { parent, distance, eccentricity, tilt } } = this;
-      // console.log({ nominalRadiantSpeed, orbit: { parent, distance, eccentricity, tilt } });
-      // console.log(this.name, this);
-      // console.log(this.name, parent.name, parent.threeObj.position);
       const { cos, sin, PI, abs } = Math;
 
+
       const radialStep = nominalRadiantSpeed * delta;
+
       if (radialStep !== 0) this.radialPosition += radialStep;
       if (this.radialPosition > PI * 2) this.radialPosition -= PI * 2;
       this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * abs(eccentricity));
       this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * (distance - (distance * sin(tilt)));
       this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * sin(tilt);
     }
+  }
+
+  animate(delta) {
+
+    if (camera) this.manageVisibility(camera);
+
+    if (this.on) {
+      const delayed = this.delayedDelta;
+      this.delayedDelta = 0;
+      // console.log(delta + delayed);
+
+      const d = delta + delayed;
+      this.astreAnimate(d);
+
+      if (this.childs && this.childs.length) {
+        this.childs.forEach((el) => {
+          el.astreAnimate(d);
+        });
+      }
+
+    } else {
+
+      if (this.name === 'solarSys1') console.log('nope', this.delayedDelta);
+      this.delayedDelta += delta;
+    }
 
     if (this.childs && this.childs.length) {
-      // console.log(this.childs);
       this.childs.forEach((el) => {
         el.animate(delta);
       });
     }
-
-    if (this.manageLights && camera && clock.getElapsedTime() > 4) this.manageLights(camera);
-    // if (this.constructor.name === 'System') {
-    //   this.childs.forEach((el) => {
-    //     if (['Star', 'BinaryStars'].includes(el.constructor.name)) {
-    //       el.turnLightOn(delta);
-    //     }
-    //   });
-    // }
-    // console.log('=====================');
   }
+
+  manageVisibility(camera) {
+
+    const { position: p } = this.threeObj;
+    const { position: cp } = camera;
+    const objVect = new THREE.Vector3(p.x, p.y, p.z);
+    const camVect = new THREE.Vector3(cp.x, cp.y, cp.z);
+
+    this.threeObj.getWorldPosition(objVect);
+    camera.getWorldPosition(camVect);
+    const d = camVect.distanceTo(objVect);
+
+    if (d > 6000 * this.radius && this.on) {
+      this.on = false;
+      scene.remove(this.threeObj);
+    } else if (d < 6000 * this.radius && !this.on) {
+      this.on = true;
+      scene.add(this.threeObj);
+    }
+
+    if (this.manageLight) this.manageLight(d);
+  }
+
 }

@@ -10,11 +10,9 @@ class BinaryStars extends Astre {
 
     this.star1.radialPosition = 0;
     this.star1.orbitAround(this);
-    scene.add(this.star1.threeObj);
 
     this.star2.radialPosition = Math.PI;
     this.star2.orbitAround(this);
-    scene.add(this.star2.threeObj);
 
     this.threeObj.rotateX(this.tilt || 0);
     this.uuid = this.threeObj.uuid;
@@ -22,7 +20,7 @@ class BinaryStars extends Astre {
     scene.add(this.threeObj);
   }
 
-  animate(delta) {
+  astreAnimate(delta) {
     if (this.orbit && this.orbit.parent) {
 
       const { orbit: { parent } } = this;
@@ -31,13 +29,6 @@ class BinaryStars extends Astre {
       this.threeObj.position.z = parent.threeObj.position.z;
       this.threeObj.position.y = parent.threeObj.position.y;
     }
-    if (this.childs && this.childs.length) {
-      // console.log(this.childs);
-      this.childs.forEach((el) => {
-        el.animate(delta);
-      });
-    }
-    // console.log('=====================');
   }
 
   turnLightOn() {
