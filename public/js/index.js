@@ -45,7 +45,7 @@ const init = () => {
   univers = new Galaxy({
     name: 'univers'
   });
-  univers.animate(100000000);
+  // univers.animate(100000000);
 
 
   // on effectue le rendu de la scène
@@ -106,4 +106,5 @@ const animate = () => {
 init();
 (() => {
   animate();
+  teleportTo(univers);
 })();

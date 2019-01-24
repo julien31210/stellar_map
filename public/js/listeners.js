@@ -2,7 +2,7 @@
 
 const current_controls = controls.qwerty;
 
-let speed = 30000; // camera mouvement speed in km/s
+let speed = 150000000; // camera mouvement speed in km/s
 let mousepressed = false;
 let teleportIndex = '0';
 cameraIndex = [];
