@@ -10,17 +10,24 @@ class Galaxy extends Astre {
 
     this.childs = [];
 
-    for (let i = 1; i <= 150; i += 1) {
-      const sys = new System({
-        name: `solarSys${i}`,
-        orbit: {
-          parent: this,
-          eccentricity: 0,
-          distance: convert.to(`${i + 15}B`),
-          // tilt: 0,
-          tilt: randOnN(0, 50),
-        }
-      });
+    const branchesNumer = 2;
+    const sysNumber = 120;
+
+    for (let j = 0; j <= branchesNumer - 1; j += 1) {
+      const brancheSysNumber = Math.floor(sysNumber / branchesNumer);
+
+      for (let i = 0; i <= brancheSysNumber - 1; i += 1) {
+        const sys = new System({
+          name: `solarSys${i + (brancheSysNumber * j)}`,
+          orbit: {
+            parent: this,
+            eccentricity: 0,
+            distance: convert.to(`${i * 6 + 15 + j}B`),
+            tilt: randOnN(0, 180),
+          }
+        });
+        sys.radialPosition = ((2 * Math.PI) / sysNumber) * (brancheSysNumber - i) + ((2 * Math.PI) / branchesNumer) * j
+      }
     }
 
 
@@ -29,9 +36,15 @@ class Galaxy extends Astre {
       return result;
     }, 0);
 
-    this.childs.forEach((el) => {
+
+    const geometry = new THREE.SphereGeometry(this.radius, 50, 50);
+    const material = new THREE.MeshBasicMaterial();
+    this.threeObj = new THREE.Mesh(geometry, material);
+    this.threeObj.material.transparent = true;
+    this.threeObj.material.opacity = 0.03;
+
+    this.childs.forEach((el, i) => {
       this.mass += el.mass;
-      // el.radialPosition = ((2 * Math.PI) / this.childs.length) * i;
     });
 
     this.childs.forEach(el => el.orbitAround(this));

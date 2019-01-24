@@ -13,7 +13,7 @@ class Astre {
         this[key] = args[key];
       });
     this.childs = [];
-    this.radialPosition = Math.PI;
+    this.radialPosition = this.radialPosition || Math.PI;
     this.on = false;
     this.delayedDelta = 0;
 
@@ -89,7 +89,7 @@ class Astre {
     // console.log(this.name, 'astreAnimate');
     if (this.orbit && this.orbit.parent) {
 
-      const { nominalRadiantSpeed, orbit: { parent, distance, eccentricity, tilt } } = this;
+      const { nominalRadiantSpeed, radialPosition, orbit: { parent, distance: d, eccentricity: ecc, tilt } } = this;
       const { cos, sin, PI, abs } = Math;
 
 
@@ -97,9 +97,19 @@ class Astre {
 
       if (radialStep !== 0) this.radialPosition += radialStep;
       if (this.radialPosition > PI * 2) this.radialPosition -= PI * 2;
-      this.threeObj.position.x = parent.threeObj.position.x + distance * eccentricity + cos(this.radialPosition) * (distance + distance * abs(eccentricity));
-      this.threeObj.position.z = parent.threeObj.position.z + sin(this.radialPosition) * (distance - (distance * sin(tilt)));
-      this.threeObj.position.y = parent.threeObj.position.y + sin(this.radialPosition) * distance * sin(tilt);
+
+      const cosrad = cos(radialPosition);
+      const sinrad = sin(radialPosition);
+
+      this.threeObj.position.x = parent.threeObj.position.x
+        + d * ecc
+        + cosrad * (d + d * abs(ecc));
+
+      this.threeObj.position.z = parent.threeObj.position.z
+        + sinrad * d * cos(tilt);
+
+      this.threeObj.position.y = parent.threeObj.position.y
+        + sinrad * d * sin(tilt);
     }
   }
 
@@ -110,7 +120,6 @@ class Astre {
     if (this.on) {
       const delayed = this.delayedDelta;
       this.delayedDelta = 0;
-      // console.log(delta + delayed);
 
       const d = delta + delayed;
       this.astreAnimate(d);
@@ -122,8 +131,6 @@ class Astre {
       }
 
     } else {
-
-      if (this.name === 'solarSys1') console.log('nope', this.delayedDelta);
       this.delayedDelta += delta;
     }
 
