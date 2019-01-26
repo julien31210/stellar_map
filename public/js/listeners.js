@@ -1,6 +1,6 @@
 
 
-const current_controls = controls.qwerty;
+const current_controls = controls.azerty;
 
 let speed = 150000000; // camera mouvement speed in km/s
 let mousepressed = false;
