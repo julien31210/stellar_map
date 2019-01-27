@@ -10,8 +10,8 @@ class Galaxy extends Astre {
 
     this.childs = [];
 
-    const branchesNumer = 2;
-    const sysNumber = 120;
+    const branchesNumer = 3;
+    const sysNumber = 150;
 
     for (let j = 0; j <= branchesNumer - 1; j += 1) {
       const brancheSysNumber = Math.floor(sysNumber / branchesNumer);
@@ -26,7 +26,7 @@ class Galaxy extends Astre {
             tilt: randOnN(0, 180),
           }
         });
-        sys.radialPosition = ((2 * Math.PI) / sysNumber) * (brancheSysNumber - i) + ((2 * Math.PI) / branchesNumer) * j
+        sys.setBaseRadialPosition(((2 * Math.PI) / sysNumber) * (brancheSysNumber - i) + ((2 * Math.PI) / branchesNumer) * j);
       }
     }
 

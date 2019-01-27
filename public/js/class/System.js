@@ -90,6 +90,8 @@ class System extends Astre {
     this.threeObj.material.transparent = true;
     this.threeObj.material.opacity = 0.3;
 
+    this.orbit.parent.threeObj.add(this.threeObj)
+
     this.uuid = this.threeObj.uuid;
     this.radialPosition = Math.PI;
     // const asteroidBelt = new AsteroiBelt({
@@ -115,6 +117,35 @@ class System extends Astre {
     //   }
     // });
     // this.childs.push(asteroidBelt);
+  }
+
+  setBaseRadialPosition(rad) {
+
+    this.radialPosition = rad;
+
+    if (this.orbit && this.orbit.parent) {
+
+      const { nominalRadiantSpeed, radialPosition, orbit: { parent, distance: d, eccentricity: ecc, tilt } } = this;
+      const { cos, sin, PI, abs } = Math;
+
+      const cosrad = cos(radialPosition);
+      const sinrad = sin(radialPosition);
+
+      this.threeObj.position.x = parent.threeObj.position.x
+        + d * ecc
+        + cosrad * (d + d * abs(ecc));
+
+      this.threeObj.position.z = parent.threeObj.position.z
+        + sinrad * d * cos(tilt);
+
+      this.threeObj.position.y = parent.threeObj.position.y
+        + sinrad * d * sin(tilt);
+    }
+
+  }
+
+  astreAnimate(delta) {
+
   }
 
   manageLight(d) {
