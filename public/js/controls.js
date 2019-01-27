@@ -5,7 +5,7 @@ const controls = {
     right: '68',
     left: '81',
     up: '32',
-    down: '17',
+    down: '16',
     roll: {
       right: '69',
       left: '65',
