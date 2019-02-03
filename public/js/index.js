@@ -31,8 +31,8 @@ const init = () => {
   scene.updateMatrixWorld();
 
   // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs'));
-  camera.position.set(0, 0, 700);
+  camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs') / 1000);
+  camera.position.set(0, 0, 200000000);
   scene.add(camera);
 
   // AmbientLight really low light
@@ -41,11 +41,6 @@ const init = () => {
 
   mouse = new THREE.Vector2();
   cameraRaycaster = new THREE.Raycaster();
-
-  univers = new Galaxy({
-    name: 'univers'
-  });
-  // univers.animate(100000000);
 
 
   // on effectue le rendu de la scène
@@ -76,17 +71,14 @@ const animate = () => {
     }
   });
 
-  let d = 0;
-  if (timeSpeedMultiplicator !== 0) d = delta * baseTimeSpeed * timeSpeedMultiplicator;
-
-  univers.animate(d);
-
   cameraRaycaster.setFromCamera(mouse, camera);
   mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
+  // scene.updateMatrixWorld(); ??
 
+  if (univers) univers.animate(delta, baseTimeSpeed * timeSpeedMultiplicator);
   // logger
   logger.camPos = camera.position;
   logger.univers = univers;
@@ -105,6 +97,9 @@ const animate = () => {
 
 init();
 (() => {
+  univers = new Galaxy({ name: `Galaxy${0 + 1}` });
   animate();
-  teleportTo(univers);
+  setTimeout(() => {
+    teleportTo(univers);
+  }, 250);
 })();
