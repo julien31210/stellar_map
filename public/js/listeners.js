@@ -63,7 +63,7 @@ oncontextmenu = (e) => {
 
     univers.forEach((el) => {
       if (cameraClipedTo && (cameraClipedTo.uuid === el.uuid)) {
-        openWindow(el.type);
+        openWindow(el);
       }
     });
 
