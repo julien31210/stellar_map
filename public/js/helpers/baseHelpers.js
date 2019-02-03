@@ -53,7 +53,7 @@ const convert = {
   to: (strn, unit) => {
     // bring back to kilometers
     let nKm = toKm(strn);
-    if (!unit) return nKm / dimentionDivider;
+    if (!unit) return nKm;
     if (unit.includes('parsec') || unit.includes('pc')) nKm /= uv.parsecs;
     else if (unit.includes('m') || unit.includes('meter')) nKm /= uv.meter;
     else if (unit.includes('M') || unit.includes('million')) nKm /= uv.million;
@@ -61,7 +61,7 @@ const convert = {
     else if (unit.includes('ly') || unit.includes('LY')) nKm /= uv.ly;
     else if (unit.includes('au') || unit.includes('AU')) nKm /= uv.au;
 
-    return nKm / dimentionDivider;
+    return nKm;
   }
 };
 const randOn100 = chances => Math.random() * 100 <= chances;
@@ -79,5 +79,7 @@ const randOnArray = (arr) => {
   return arr[r];
 };
 
-console.log(convert.to('1ly'));
-console.log(convert.to('1B'));
+const randOnObject = (obj) => {
+  const arr = Object.keys(obj);
+  return obj[randOnArray(arr)];
+};
