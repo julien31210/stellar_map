@@ -1,178 +1,80 @@
 
 class System extends Astre {
-  initThreeObj() {
+  constructor(args) {
+    super(args);
 
-    const sun = new Star({
-      name: 'sun',
-      radius: convert.to(695508), // 6.95 508
-      color: 0xf0f00f,
-      mass: ((1.989 / 2) * (10 ** 30)),
-      type: 'star',
-      orbit: {
-        eccentricity: .4,
-        tilt: 90,
-        distance: convert.to('3M'),
+    // 1/3 to 1/2 of stars in univers are binaryStars => about 42%
+    const center = randOn100(100)
+      ? new BinaryStars({
+        name: `${this.name}'s center BinaryStars`,
+        type1: this.centerType,
+        type2: randOnObject(starsTypes),
+        radius: convert.to(3474) / 1000,
+        mass: 7.36 * (10 ** 22),
+        orbit: { parent: this },
+      })
+      : new Star(this.centerType({
+        name: `${this.name}'s center Star`,
+        orbit: { parent: this }
+      }));
+
+    this.center = center;
+    this.mass = center.mass;
+
+    if (this.entities && this.entities.nb > 0) {
+      for (let i = 0; i < this.entities.nb; i += 1) {
+        const entity = randOn100(95)
+          ? new Planet({
+            completName: `${this.name}'s Planet${i + 1}`,
+            name: `Planet${i + 1}`,
+            radius: convert.to(3474) / 1000,
+            color: 0x00cccc,
+            type: 'planet',
+            moons: { nb: randOn100(50) ? 1 : 0 },
+            orbit: {
+              parent: this,
+              distance: convert.to('149,6 M') / 1000,
+              eccentricity: .1,
+              tilt: randOnN(0, 15),
+            },
+            mass: (7.36 * (10 ** 22))
+          })
+          : new Star(this.centerType({
+            completName: `${this.name}'s Star${i + 1}`,
+            name: `Star${i + 1}`,
+            orbit: {
+              parent: this,
+              distance: convert.to('149,6 M') / 1000,
+              eccentricity: .1,
+              tilt: randOnN(0, 15),
+            },
+          }));
+
+        entity.setRadialPosition(radiantRand());
       }
-    });
-    const sun2 = new Star({
-      name: 'sun2',
-      radius: convert.to(695508),
-      color: 0xf0f00f,
-      mass: ((1.989 / 2) * (10 ** 30)),
-      type: 'star',
-      orbit: {
-        eccentricity: -.4,
-        tilt: 90,
-        distance: convert.to('3M'),
-      }
+    }
+
+    this.childs.forEach((el) => {
+      el.orbitAround(this);
     });
 
-    const binaryStars = new BinaryStars({
-      name: 'binaryStars',
-      type: 'binary stars',
-      star1: sun,
-      star2: sun2,
-      tilt: 0,
-      orbit: {
-        parent: this,
-        eccentricity: .4,
-        tilt: 90,
-        distance: convert.to('3M'),
-      }
-    });
-
-    const earth = new Astre({
-      name: 'earth',
-      radius: convert.to(6371),
-      color: 0x00ffff,
-      type: 'planet',
-      orbit: {
-        parent: binaryStars,
-        distance: convert.to('149,6 M'),
-        tilt: 0,
-      },
-      mass: 5.972 * (10 ** 24)
-    });
-
-    const moon = new Astre({
-      name: 'moon',
-      radius: convert.to(3474),
-      color: 0xcccccc,
-      type: 'planet',
-      orbit: {
-        parent: earth,
-        distance: convert.to(384000),
-        eccentricity: .1,
-        tilt: 5.14,
-      },
-      mass: (7.36 * (10 ** 22))
-    });
-
-    this.mass = sun.mass
-      + sun2.mass
-      + earth.mass
-      + moon.mass;
-    this.radius = [
-      sun,
-      sun2,
-      earth,
-      moon
-    ].reduce((result, value) => {
-      if (result < value.orbit.distance * 2) return value.orbit.distance * 2;
-      return result;
+    this.radius = this.childs.reduce((rad, child) => {
+      const d = child.orbit.distance;
+      if (rad < d * 1.5) return d * 1.5;
+      return rad;
     }, 0);
 
-    binaryStars.orbitAround(this);
+  }
+
+  initThreeObj() {
+    this.threeObj = this.baseThreeObj;
 
     const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
     const material = new THREE.MeshBasicMaterial();
-    this.threeObj = new THREE.Mesh(geometry, material);
-    this.threeObj.material.transparent = true;
-    this.threeObj.material.opacity = 0.3;
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.material.transparent = true;
+    sphere.material.opacity = 0.3;
 
-    this.orbit.parent.threeObj.add(this.threeObj)
-
-    this.uuid = this.threeObj.uuid;
-    this.radialPosition = Math.PI;
-    // const asteroidBelt = new AsteroiBelt({
-    //   name: 'asteroidBelt',
-    //   radius: 30000,
-    //   color: 0xcccccc,
-    //   type: 'asteroid belt',
-    //   orbit: {
-    //     parent: sun,
-    //     distance: (7.5 * (10 ** 6)),
-    //     // distance: (1.75 * (10 ** 7)),
-    //     nb: 1000,
-    //     eccentricity: .1,
-    //     tilt: 90,
-    //     thickness: 5,
-    //     aprox: {
-    //       nb: 5,
-    //       eccentricity: 20,
-    //       tilt: 20,
-    //       radius: 0,
-    //       distance: 20,
-    //     }
-    //   }
-    // });
-    // this.childs.push(asteroidBelt);
-  }
-
-  setBaseRadialPosition(rad) {
-
-    this.radialPosition = rad;
-
-    if (this.orbit && this.orbit.parent) {
-
-      const { nominalRadiantSpeed, radialPosition, orbit: { parent, distance: d, eccentricity: ecc, tilt } } = this;
-      const { cos, sin, PI, abs } = Math;
-
-      const cosrad = cos(radialPosition);
-      const sinrad = sin(radialPosition);
-
-      this.threeObj.position.x = parent.threeObj.position.x
-        + d * ecc
-        + cosrad * (d + d * abs(ecc));
-
-      this.threeObj.position.z = parent.threeObj.position.z
-        + sinrad * d * cos(tilt);
-
-      this.threeObj.position.y = parent.threeObj.position.y
-        + sinrad * d * sin(tilt);
-    }
-
-  }
-
-  astreAnimate(delta) {
-
-  }
-
-  manageLight(d) {
-
-    if (d < this.radius) {
-
-      const turnLightOnRecurs = (el) => {
-        if (el.light && !el.lightStats) {
-          console.log(el.name, 'ON');
-          el.turnLightOn();
-        }
-        if (el.childs) el.childs.forEach(turnLightOnRecurs);
-      };
-
-      this.childs.forEach(turnLightOnRecurs);
-
-    } else {
-
-      const turnLightOffRecurs = (el) => {
-        if (el.light && el.lightStats) {
-          console.log(el.name, 'OFF');
-          el.turnLightOff();
-        }
-        if (el.childs) el.childs.forEach(turnLightOffRecurs);
-      };
-
-      this.childs.forEach(turnLightOffRecurs);
-    }
+    this.baseThreeObj.add(sphere);
   }
 }
