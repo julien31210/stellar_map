@@ -2,10 +2,10 @@
 
 const current_controls = controls.azerty;
 
-let speed = 7000; // camera mouvement speed in km/s
+let speed = 150000000; // camera mouvement speed in km/s
 let mousepressed = false;
 let teleportIndex = '0';
-
+cameraIndex = [];
 let timeSpeedMultiplicator = 1;
 
 onkeydown = onkeyup = (e) => {
@@ -14,29 +14,20 @@ onkeydown = onkeyup = (e) => {
   keys[k] = e.type === 'keydown';
   if (e.type === 'keydown') {
     if (k == current_controls.logger) console.log(logger);
-    if (k == current_controls.timeSpeed.slowDown) timeSpeedMultiplicator > -500 ? timeSpeedMultiplicator -= Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2 : null;
-    if (k == current_controls.timeSpeed.speedUp) timeSpeedMultiplicator < 500 ? timeSpeedMultiplicator += Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2 : null;
+    if (k == current_controls.timeSpeed.slowDown && timeSpeedMultiplicator > -5000000) timeSpeedMultiplicator -= Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
+    if (k == current_controls.timeSpeed.speedUp && timeSpeedMultiplicator < 5000000) timeSpeedMultiplicator += Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
     if (k == current_controls.camera.speedUp) speed += speed / 2;
     if (k == current_controls.camera.slowDown) speed -= speed / 2;
+    if (k === 192) animate();
 
-    if (k == current_controls.camera.teleportToNextIndex && parseInt(teleportIndex, 10) + 1 <= univers.length) {
+    if (k == current_controls.camera.teleportToNextIndex && parseInt(teleportIndex, 10) + 1 <= cameraIndex.length) {
       teleportIndex = parseInt(teleportIndex, 10) + 1;
-      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
+      if (cameraIndex[teleportIndex - 1]) teleportTo(cameraIndex[teleportIndex - 1]);
     }
     if (k == current_controls.camera.teleportToPrevIndex && teleportIndex - 1 > 0) {
       teleportIndex = parseInt(teleportIndex, 10) - 1;
-      if (univers[teleportIndex - 1]) teleportTo(univers[teleportIndex - 1]);
+      if (cameraIndex[teleportIndex - 1]) teleportTo(cameraIndex[teleportIndex - 1]);
     }
-
-    if (k >= 48 && k <= 57) {
-      const num = k - 48;
-      teleportIndex += num.toString(10);
-    }
-    if (k === 13 && univers[teleportIndex - 1]) {
-      const o = univers[teleportIndex - 1];
-      teleportTo(o);
-    }
-    if (k === 8 || k === 13) teleportIndex = '0';
   }
 
 };
@@ -59,15 +50,15 @@ oncontextmenu = (e) => {
   e.preventDefault();
   mousepressed = false;
   if (mouseOvers.length) {
-    cameraClipedTo = mouseOvers[0].object;
+    console.log(convert.to(mouseOvers[0].distance));
 
-    univers.forEach((el) => {
-      if (cameraClipedTo && (cameraClipedTo.uuid === el.uuid)) {
+    cameraIndex.forEach((el) => {
+      if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
         openWindow(el);
+        if (typeof mouseOvers[0].onRightClick === 'function') mouseOvers[0].onRightClick();
       }
     });
 
-    console.log(mouseOvers[0].object);
   }
 };
 
@@ -77,6 +68,14 @@ onmousedown = (e) => {
   if (e.type !== 'contextmenu') {
     mousepressed = true;
 
+    if (mouseOvers.length) {
+      cameraIndex.forEach((el) => {
+        if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
+          console.log(mouseOvers[0]);
+          if (typeof mouseOvers[0].onLeftClick === 'function') mouseOvers[0].onLeftClick();
+        }
+      });
+    }
   }
 };
 onmouseup = (e) => {

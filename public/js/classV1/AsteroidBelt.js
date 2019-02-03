@@ -33,6 +33,8 @@ class AsteroiBelt extends Astre {
 
     this.uuid = this.threeObj.uuid;
 
+    this.threeObj.position.set(this.position.x, this.position.y, this.position.z);
+
     scene.add(this.threeObj);
   }
 

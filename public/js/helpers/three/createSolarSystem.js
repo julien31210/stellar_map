@@ -1,5 +1,5 @@
 
-const createSollarSystem = () => {
+const createSollarSystem = (parent) => {
   const sun = new Star({
     name: 'sun',
     radius: convert.to(695508), // 6.95 508
@@ -33,7 +33,7 @@ const createSollarSystem = () => {
     star1: sun,
     star2: sun2,
     tilt: 0,
-    orbit: {}
+    orbit: { parent }
   });
   univers.push(binaryStars);
 
