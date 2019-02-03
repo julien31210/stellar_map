@@ -1,47 +1,81 @@
 
 class BinaryStars extends Astre {
+  constructor(args) {
+    super(args);
+
+    const tilt = radiantRand();
+
+    const star1 = new Star(this.type1({
+      name: `${this.name}'s star1`,
+      orbit: {
+        eccentricity: .3,
+        tilt,
+        distance: convert.to('3M') / 1000,
+      }
+    }));
+
+    const star2 = new Star(this.type2({
+      name: `${this.name}'s star2`,
+      orbit: {
+        eccentricity: -.3,
+        tilt,
+        distance: convert.to('3M') / 1000,
+      }
+    }));
+
+    this.childsIds.push(star1.uuid);
+    this.childsIds.push(star2.uuid);
+
+    this.star1 = star1;
+    this.star2 = star2;
 
 
-  initThreeObj() {
-    this.threeObj = new THREE.Object3D();
+    const m1 = this.star1.mass;
+    const m2 = this.star2.mass;
 
-    this.mass = this.star1.mass + this.star2.mass;
-    this.radius = this.star1.radius + this.star2.radius;
+
+    const dist = this.star1.orbit.distance + this.star2.orbit.distance;
+
+    this.mass = m1 + m2;
+    this.radius = dist + this.star1.radius + this.star2.radius;
+
+    const dist1 = (m2 * dist) / (this.mass);
+    const dist2 = (m1 * dist) / (this.mass);
+
+    this.star1.orbit.distance = dist1;
+    this.star2.orbit.distance = dist2;
+
+    const center1 = {
+      mass: this.star2.mass,
+      dist1: dist2,
+      dist2: dist1,
+    };
+
+    const center2 = {
+      mass: this.star1.mass,
+      dist1,
+      dist2,
+    };
+
+    const star1orbit = this.star1.orbitAround(this, center1);
+    const star2orbit = this.star2.orbitAround(this, center2);
+
+    if (star1orbit.orbitPeriod > star2orbit.orbitPeriod) {
+      this.star2.orbit.miror = this.star1;
+      this.star2.orbitAround(this, { ...center2, ...star2orbit });
+    } else {
+      this.star1.orbit.miror = this.star2;
+      this.star1.orbitAround(this, { ...center2, ...star2orbit });
+    }
 
     this.star1.radialPosition = 0;
-    this.star1.orbitAround(this);
-
     this.star2.radialPosition = Math.PI;
-    this.star2.orbitAround(this);
 
-    this.threeObj.rotateX(this.tilt || 0);
-    this.uuid = this.threeObj.uuid;
 
-    scene.add(this.threeObj);
   }
 
-  astreAnimate(delta) {
-    if (this.orbit && this.orbit.parent) {
-
-      const { orbit: { parent } } = this;
-
-      this.threeObj.position.x = parent.threeObj.position.x;
-      this.threeObj.position.z = parent.threeObj.position.z;
-      this.threeObj.position.y = parent.threeObj.position.y;
-    }
+  initThreeObj() {
+    this.threeObj = this.baseThreeObj;
   }
 
-  turnLightOn() {
-    this.childs.forEach((el) => {
-      console.log('ok');
-      if (el.light && !el.lightStats) el.turnLightOn();
-    });
-  }
-
-  turnLightOff() {
-    this.childs.forEach((el) => {
-      console.log('ok');
-      if (el.light && el.lightStats) el.turnLightOff();
-    });
-  }
 }
