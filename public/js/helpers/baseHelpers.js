@@ -46,10 +46,12 @@ const toKm = (n) => { // translate a string number like 15parsecs to kilometers
   return r;
 };
 
+const { PI, random, floor, round } = Math;
+
 const dimentionDivider = 1000;
 const convert = {
-  radians: degrees => degrees * Math.PI / 180,
-  degrees: radians => radians * 180 / Math.PI,
+  radians: degrees => degrees * PI / 180,
+  degrees: radians => radians * 180 / PI,
   to: (strn, unit) => {
     // bring back to kilometers
     let nKm = toKm(strn);
@@ -64,22 +66,26 @@ const convert = {
     return nKm;
   }
 };
-const randOn100 = chances => Math.random() * 100 <= chances;
-const randOnN = (from, to) => (Math.random() * (to - from)) + from;
-const radiantRand = () => (Math.random() * 2 - 1) * Math.PI;
 
 // return aproximately return n more or less percentage
 const aprox = (n, percentage) => {
-  if (n && percentage) return randOnN(n - n * ((percentage || 0) / 100), n + n * ((percentage || 0) / 100));
+  if (n && percentage) return rand.on.n(n - n * ((percentage || 0) / 100), n + n * ((percentage || 0) / 100));
   return n;
 };
 
-const randOnArray = (arr) => {
-  const r = Math.round(Math.random() * (arr.length - 1));
-  return arr[r];
-};
-
-const randOnObject = (obj) => {
-  const arr = Object.keys(obj);
-  return obj[randOnArray(arr)];
+const rand = {
+  on: {
+    percent: chances => random() * 100 <= chances,
+    n: (from, to) => (random() * (to - from)) + from,
+    int: (from, to) => round(rand.on.n(from, to)),
+    object: (obj) => {
+      const arr = Object.keys(obj);
+      return obj[rand.on.array(arr)];
+    },
+    array: (arr) => {
+      const r = round(random() * (arr.length - 1));
+      return arr[r];
+    }
+  },
+  radiant: () => (random() * 2 - 1) * PI
 };

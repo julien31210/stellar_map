@@ -11,7 +11,7 @@ const starsTypes = {
     type: 'redDwarf',
     radius: convert.to(6371) / 1000,
     color: 0xf00f0f,
-    mass: randOnN(1.49175 * (10 ** 29), 7.956 * (10 ** 29)),
+    mass: rand.on.n(1.49175 * (10 ** 29), 7.956 * (10 ** 29)),
     ...args
   }),
   // yellowDwarf: args => ({ // to do
@@ -23,8 +23,8 @@ const starsTypes = {
   // }),
   brownDwarf: args => ({ // ok
     type: 'brownDwarf',
-    radius: convert.to(69911 * randOnN(1.10, 1.15)) / 1000, // jupiter's radius + 10 to 15%
-    mass: randOnN(2.5 * (10 ** 28), 1.5 * (10 ** 29)),
+    radius: convert.to(69911 * rand.on.n(1.10, 1.15)) / 1000, // jupiter's radius + 10 to 15%
+    mass: rand.on.n(2.5 * (10 ** 28), 1.5 * (10 ** 29)),
     color: 0xffaf38, // ok
     ...args
   }),

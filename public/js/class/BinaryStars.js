@@ -3,7 +3,7 @@ class BinaryStars extends Astre {
   constructor(args) {
     super(args);
 
-    const tilt = radiantRand();
+    const tilt = rand.radiant();
 
     const star1 = new Star(this.type1({
       name: `${this.name}'s star1`,

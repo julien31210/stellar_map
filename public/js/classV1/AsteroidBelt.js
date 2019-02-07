@@ -16,8 +16,8 @@ class AsteroiBelt extends Astre {
 
       const astero = new THREE.Mesh(geometry, material);
 
-      const radialPosition = radiantRand();
-      const radialPositionY = radiantRand();
+      const radialPosition = rand.radiant();
+      const radialPositionY = rand.radiant();
 
       const d = aprox(distance, aproxValues && aproxValues.distance);
 
