@@ -76,12 +76,12 @@ const animate = () => {
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-      if (k === current_controls.forward) camera.translateZ(-speed * delta);
-      if (k === current_controls.back) camera.translateZ(speed * delta);
-      if (k === current_controls.right) camera.translateX(speed * delta);
-      if (k === current_controls.left) camera.translateX(-speed * delta);
-      if (k === current_controls.up) camera.translateY(speed * delta);
-      if (k === current_controls.down) camera.translateY(-speed * delta);
+      if (k === current_controls.forward) camera.translateZ(-mouseWheelSpeed * delta);
+      if (k === current_controls.back) camera.translateZ(mouseWheelSpeed * delta);
+      if (k === current_controls.right) camera.translateX(mouseWheelSpeed * delta);
+      if (k === current_controls.left) camera.translateX(-mouseWheelSpeed * delta);
+      if (k === current_controls.up) camera.translateY(mouseWheelSpeed * delta);
+      if (k === current_controls.down) camera.translateY(-mouseWheelSpeed * delta);
       if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
       if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
     }
@@ -98,7 +98,7 @@ const animate = () => {
   // logger
   logger.camPos = camera.position;
   logger.univers = univers;
-  logger.cameraSpeed = `${speed}Km/s`;
+  logger.cameraSpeed = `${mouseWheelSpeed}Km/s`;
   logger.mouseOvers = mouseOvers;
   logger.time.s += delta * timeSpeedMultiplicator;
   logger.time.m = logger.time.s / 60;

@@ -2,7 +2,7 @@
 
 const current_controls = controls.azerty;
 
-let speed = 150000000; // camera mouvement speed in km/s
+let mouseWheelSpeed = 30000; // camera movement speed in km/s
 let mousepressed = false;
 let teleportIndex = '0';
 cameraIndex = [];
@@ -16,8 +16,8 @@ onkeydown = onkeyup = (e) => {
     if (k == current_controls.logger) console.log(logger);
     if (k == current_controls.timeSpeed.slowDown && timeSpeedMultiplicator > -5000000) timeSpeedMultiplicator -= Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
     if (k == current_controls.timeSpeed.speedUp && timeSpeedMultiplicator < 5000000) timeSpeedMultiplicator += Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
-    if (k == current_controls.camera.speedUp) speed += speed / 2;
-    if (k == current_controls.camera.slowDown) speed -= speed / 2;
+    if (k == current_controls.camera.speedUp) mouseWheelSpeed += mouseWheelSpeed / 2;
+    if (k == current_controls.camera.slowDown) mouseWheelSpeed -= mouseWheelSpeed / 2;
     if (k == 13) {
       if (document.pointerLockElement === document.getElementById('blocker')) document.exitPointerLock();
       else document.getElementById('blocker').requestPointerLock();
@@ -99,6 +99,6 @@ onmousewheel = (e) => {
   e.preventDefault();
   e.stopPropagation();
 
-  if (e.deltaY > 0) speed -= speed / 2;
-  if (e.deltaY < 0) speed += speed / 2;
+  if (e.deltaY > 0) mouseWheelSpeed -= mouseWheelSpeed / 2;
+  if (e.deltaY < 0) mouseWheelSpeed += mouseWheelSpeed / 2;
 };
