@@ -1,4 +1,4 @@
-let renderer, scene, camera, lastRot, cameraRaycaster, mouse, cameraClipedTo, univers;
+let renderer, scene, camera, lastRot, cameraRaycaster, mouse, cameraClipedTo, univers, controlsPointLocker, pointLockerRaycaster;
 
 
 let delta = 0;
@@ -32,8 +32,24 @@ const init = () => {
 
   // on initialise la camera que l'on place ensuite sur la scène
   camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs') / 1000);
-  camera.position.set(0, 0, 200000000);
   scene.add(camera);
+
+  const geometry = new THREE.BoxGeometry(.01, .01, .01);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const crossAir = new THREE.Object3D();
+  // for (let i = 0; i < 4; i += 1) {
+  const cube = new THREE.Mesh(geometry, material);
+  cube.position.set(.02, 0, 0);
+  const cube1 = new THREE.Mesh(geometry, material);
+  cube1.position.set(-.02, 0, 0);
+  const cube2 = new THREE.Mesh(geometry, material);
+  cube2.position.set(0, .02, 0);
+  const cube3 = new THREE.Mesh(geometry, material);
+  cube3.position.set(0, -.02, 0);
+  crossAir.add(cube, cube1, cube2, cube3);
+  // }
+  crossAir.position.set(0, 0, -5);
+  camera.add(crossAir);
 
   // AmbientLight really low light
   const ambient = new THREE.AmbientLight(0x060606);
