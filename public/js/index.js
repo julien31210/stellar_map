@@ -103,17 +103,9 @@ init();
     name: `Galaxy${0 + 1}`,
     branchesNumber: percent(90) ? rInt(2, 3) : rInt(4, 5),
     spiralStrength: n(1, 2),
-    density: n(1.2, 2),
-    sysNumber: 100
+    density: n(1, 2),
+    sysNumber: 90
   });
-
-  this.branchesNumber = percent(90) ? rInt(2, 3) : rInt(4, 5);
-
-  this.spiralStrength = n(1, 2);
-  this.density = n(1.2, 2);
-
-  this.sysNumber = 100;
-
 
   animate();
   setTimeout(() => {

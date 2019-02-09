@@ -21,7 +21,7 @@ class Galaxy extends Astre {
             parent: this,
             eccentricity: 0,
             distance: convert.to(`${(i / this.density) * 10 + 25 + j}B`) / 1000,
-            tilt: n(0, 200 - (200 / brancheSysNumber) * i)
+            tilt: n(-90 + (90 / brancheSysNumber) * i, 90 - (90 / brancheSysNumber) * i)
           }
         });
         sys.setRadialPosition(
