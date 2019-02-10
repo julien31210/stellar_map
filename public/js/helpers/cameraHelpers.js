@@ -18,7 +18,7 @@ const teleportTo = (o) => {
   // camera.position.set(o.position.x, o.position.y, o.position.z + o.radius * 6);
   const cp = new THREE.Vector3();
   camera.getWorldPosition(cp);
-  speed = o.radius * 5;
+  mouseWheelSpeed = o.radius * 5;
   // teleportation end
 
 

@@ -19,7 +19,8 @@ const controls = {
       speedUp: '84',
       slowDown: '71',
       teleportToNextIndex: '39',
-      teleportToPrevIndex: '37'
+      teleportToPrevIndex: '37',
+      toggleAutoSpeed: '67'
     },
   },
   qwerty: {
@@ -42,7 +43,8 @@ const controls = {
       speedUp: '84',
       slowDown: '71',
       teleportToNextIndex: '39',
-      teleportToPrevIndex: '37'
+      teleportToPrevIndex: '37',
+      toggleAutoSpeed: '67'
     },
   }
 };
