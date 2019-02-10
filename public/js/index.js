@@ -1,4 +1,4 @@
-let renderer, scene, camera, lastRot, cameraRaycaster, mouse, cameraClipedTo, univers, controlsPointLocker, pointLockerRaycaster;
+let renderer, scene, camera, lastRot, cameraRaycaster, crossAirRaycaster, crossAirOvers, mouse, cameraClipedTo, univers, controlsPointLocker, pointLockerRaycaster;
 
 
 let delta = 0;
@@ -57,6 +57,7 @@ const init = () => {
 
   mouse = new THREE.Vector2();
   cameraRaycaster = new THREE.Raycaster();
+  crossAirRaycaster = new THREE.Raycaster();
 
 
   // on effectue le rendu de la scène
@@ -90,6 +91,23 @@ const animate = () => {
   cameraRaycaster.setFromCamera(mouse, camera);
   mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
 
+  crossAirRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+  crossAirOvers = crossAirRaycaster.intersectObjects(scene.children, true);
+  if (crossAirOvers[0] && getAstreByUuid(crossAirOvers[0].object.uuid) && autoSpeedToggled) {
+
+    const aimedAstre = getAstreByUuid(crossAirOvers[0].object.uuid);
+
+    const d = aimedAstre.getDistanceToCamera(camera);
+    const { radius } = aimedAstre;
+    const newSpeed = (d ** 1.075) - (radius ** 1.1);
+
+    mouseWheelSpeed = newSpeed;
+    if (d < radius * 7) mouseWheelSpeed = d / 1.5;
+
+  } else {
+    autoSpeed = mouseWheelSpeed;
+  }
+
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
   // scene.updateMatrixWorld(); ??
@@ -118,13 +136,14 @@ init();
   univers = new Galaxy({
     name: `Galaxy${0 + 1}`,
     branchesNumber: percent(90) ? rInt(2, 3) : rInt(4, 5),
-    spiralStrength: n(1, 2),
-    density: n(1, 2),
-    sysNumber: 90
+    spiralStrength: n(1, 3),
+    density: n(1.2, 2.2),
+    sysNumber: 200
   });
 
   animate();
   setTimeout(() => {
     teleportTo(univers);
+    document.getElementById('blocker').requestPointerLock();
   }, 250);
 })();

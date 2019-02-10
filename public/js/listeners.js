@@ -3,6 +3,7 @@
 const current_controls = controls.azerty;
 
 let mouseWheelSpeed = 30000; // camera movement speed in km/s
+let autoSpeedToggled = false;
 let mousepressed = false;
 let teleportIndex = '0';
 cameraIndex = [];
@@ -18,6 +19,7 @@ onkeydown = onkeyup = (e) => {
     if (k == current_controls.timeSpeed.speedUp && timeSpeedMultiplicator < 5000000) timeSpeedMultiplicator += Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
     if (k == current_controls.camera.speedUp) mouseWheelSpeed += mouseWheelSpeed / 2;
     if (k == current_controls.camera.slowDown) mouseWheelSpeed -= mouseWheelSpeed / 2;
+    if (k == current_controls.camera.toggleAutoSpeed) autoSpeedToggled = !autoSpeedToggled;
     if (k == 13) {
       if (document.pointerLockElement === document.getElementById('blocker')) document.exitPointerLock();
       else document.getElementById('blocker').requestPointerLock();
