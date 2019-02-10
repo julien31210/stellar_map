@@ -75,19 +75,6 @@ const animate = () => {
 
   frameCount += 1;
 
-  Object.keys(keys).forEach((k) => {
-    if (keys[k]) {
-      if (k === current_controls.forward) camera.translateZ(-mouseWheelSpeed * delta);
-      if (k === current_controls.back) camera.translateZ(mouseWheelSpeed * delta);
-      if (k === current_controls.right) camera.translateX(mouseWheelSpeed * delta);
-      if (k === current_controls.left) camera.translateX(-mouseWheelSpeed * delta);
-      if (k === current_controls.up) camera.translateY(mouseWheelSpeed * delta);
-      if (k === current_controls.down) camera.translateY(-mouseWheelSpeed * delta);
-      if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
-      if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
-    }
-  });
-
   cameraRaycaster.setFromCamera(mouse, camera);
   mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
 
@@ -101,12 +88,33 @@ const animate = () => {
     const { radius } = aimedAstre;
     const newSpeed = (d ** 1.075) - (radius ** 1.1);
 
-    mouseWheelSpeed = newSpeed;
-    if (d < radius * 7) mouseWheelSpeed = d / 1.5;
+    autoSpeed = newSpeed;
+    if (d < radius * 7) {
+      mouseWheelSpeed = d / 1.5;
+      autoSpeed = mouseWheelSpeed;
+    }
 
   } else {
-    autoSpeed = mouseWheelSpeed;
+    autoSpeedToggled = false;
   }
+
+  Object.keys(keys).forEach((k) => {
+    if (keys[k]) {
+
+      if (k === current_controls.forward) {
+        if (!autoSpeedToggled) camera.translateZ(-mouseWheelSpeed * delta)
+        else camera.translateZ(-autoSpeed * delta);
+      }
+      if (k === current_controls.back) camera.translateZ(mouseWheelSpeed * delta);
+      if (k === current_controls.right) camera.translateX(mouseWheelSpeed * delta);
+      if (k === current_controls.left) camera.translateX(-mouseWheelSpeed * delta);
+      if (k === current_controls.up) camera.translateY(mouseWheelSpeed * delta);
+      if (k === current_controls.down) camera.translateY(-mouseWheelSpeed * delta);
+
+      if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
+      if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
+    }
+  });
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
