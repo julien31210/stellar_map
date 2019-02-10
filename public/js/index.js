@@ -132,18 +132,17 @@ const animate = () => {
 init();
 (() => {
 
-  const { int: rInt, n, percent } = rand.on;
+  const { int: rInt, n } = rand.on;
   univers = new Galaxy({
     name: `Galaxy${0 + 1}`,
-    branchesNumber: percent(90) ? rInt(2, 3) : rInt(4, 5),
+    branchesNumber: rInt(2, 5),
     spiralStrength: n(1, 3),
     density: n(1.2, 2.2),
-    sysNumber: 200
+    sysNumber: 150
   });
 
   animate();
   setTimeout(() => {
     teleportTo(univers);
-    document.getElementById('blocker').requestPointerLock();
   }, 250);
 })();
