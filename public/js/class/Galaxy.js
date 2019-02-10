@@ -45,7 +45,7 @@ class Galaxy extends Astre {
   }
 
   initThreeObj() {
-    this.threeObj = this.baseThreeObj;
+    this.threeObj = this.groupThree;
 
     const geometry = new THREE.SphereGeometry(this.radius * 1.2, 25, 25);
     const material = new THREE.MeshBasicMaterial();
@@ -58,6 +58,6 @@ class Galaxy extends Astre {
     const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const sphere2 = new THREE.Mesh(geometry2, material2);
 
-    this.baseThreeObj.add(sphere, sphere2);
+    this.groupThree.add(sphere, sphere2);
   }
 }

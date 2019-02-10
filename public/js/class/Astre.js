@@ -1,8 +1,8 @@
 
 class Astre {
   constructor(args) {
-    this.baseThreeObj = new THREE.Object3D();
-    this.uuid = this.baseThreeObj.uuid;
+    this.groupThree = new THREE.Group();
+    this.uuid = this.groupThree.uuid;
     this.lifeTime = 0;
     this.realLifeTime = 0;
     this.called = [];
@@ -33,7 +33,7 @@ class Astre {
 
     if (this.orbit && this.orbit.parent) this.orbitAround();
 
-    scene.add(this.baseThreeObj);
+    scene.add(this.groupThree);
 
     cameraIndex.push(this);
 
@@ -84,7 +84,7 @@ class Astre {
 
   getWorldPosition() {
     const objVect = new THREE.Vector3();
-    this.baseThreeObj.getWorldPosition(objVect);
+    this.groupThree.getWorldPosition(objVect);
 
     return objVect;
   }
@@ -96,7 +96,7 @@ class Astre {
 
     if (d > 6000 * this.radius && this.on && this.threeObjInited) {
       this.on = false;
-      scene.remove(this.baseThreeObj);
+      scene.remove(this.groupThree);
     }
 
     if (d < 6000 * this.radius && !this.on) {
@@ -114,7 +114,7 @@ class Astre {
       }
       this.on = true;
 
-      scene.add(this.baseThreeObj);
+      scene.add(this.groupThree);
     }
 
   }
@@ -161,9 +161,9 @@ class Astre {
 
     }
 
-    this.baseThreeObj.position.x = this.position.x;
-    this.baseThreeObj.position.y = this.position.y;
-    this.baseThreeObj.position.z = this.position.z;
+    this.groupThree.position.x = this.position.x;
+    this.groupThree.position.y = this.position.y;
+    this.groupThree.position.z = this.position.z;
   }
 
 

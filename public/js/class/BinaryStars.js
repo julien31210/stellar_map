@@ -75,7 +75,7 @@ class BinaryStars extends Astre {
   }
 
   initThreeObj() {
-    this.threeObj = this.baseThreeObj;
+    this.threeObj = this.groupThree;
   }
 
 }

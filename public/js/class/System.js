@@ -67,7 +67,7 @@ class System extends Astre {
   }
 
   initThreeObj() {
-    this.threeObj = this.baseThreeObj;
+    this.threeObj = this.groupThree;
 
     const geometry = new THREE.SphereGeometry(this.radius * 1.2, 25, 25);
     const material = new THREE.MeshBasicMaterial();
@@ -76,6 +76,6 @@ class System extends Astre {
     sphere.material.opacity = 0.3;
     this.childsIds.push(sphere.uuid);
 
-    this.baseThreeObj.add(sphere);
+    this.groupThree.add(sphere);
   }
 }

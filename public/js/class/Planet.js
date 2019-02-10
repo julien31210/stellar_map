@@ -35,7 +35,7 @@ class Planet extends Astre {
     this.threeObj = new THREE.Mesh(geometry, material);
 
 
-    this.baseThreeObj.add(this.threeObj);
+    this.groupThree.add(this.threeObj);
 
     this.childsIds.push(this.threeObj.uuid);
   }
