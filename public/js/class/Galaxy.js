@@ -15,7 +15,7 @@ class Galaxy extends Astre {
           name: `solarSys${i + (brancheSysNumber * j)}`,
           centerType: rObject(starsTypes),
           entities: {
-            nb: i === 0 && j === 0 ? 5 : n(1, 2)
+            nb: n(1, 2)
           },
           orbit: {
             parent: this,
