@@ -10,7 +10,7 @@ const mouseSen = 1;
 const keys = {};
 let mouseOvers = [];
 
-const fov = 35;
+const fov = 65;
 
 const logger = {
   time: { s: 0, m: 0, h: 0, j: 0, a: 0 }
