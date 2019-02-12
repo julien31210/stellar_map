@@ -48,9 +48,8 @@ onmousemove = (e) => {
   const newRot = { x: e.clientX, y: e.clientY };
   if (mousepressed && !isLocked) {
     const p = camera.rotation;
-    // camera.rotation.set(p.x += (lastRot.y - newRot.y) / (250 / mouseSen), p.y += (lastRot.x - newRot.x) / (250 / mouseSen), p.z);
-    camera.rotateX((lastRot.y - newRot.y) / (250 / mouseSen));
-    camera.rotateY((lastRot.x - newRot.x) / (250 / mouseSen));
+    camera.rotateX(((lastRot.y - newRot.y) / (100 / mouseSen)) * delta);
+    camera.rotateY(((lastRot.x - newRot.x) / (100 / mouseSen)) * delta);
   }
   lastRot = newRot;
 
@@ -58,8 +57,8 @@ onmousemove = (e) => {
 
   const movementX = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
   const movementY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
-  camera.rotateX(-movementY / (1000 / mouseSen));
-  camera.rotateY(-movementX / (1000 / mouseSen));
+  camera.rotateX((-movementY / (150 / mouseSen)) * delta);
+  camera.rotateY((-movementX / (150 / mouseSen)) * delta);
 };
 
 oncontextmenu = (e) => {
