@@ -5,7 +5,6 @@ class Astre {
     this.uuid = this.groupThree.uuid;
     this.lifeTime = 0;
     this.realLifeTime = 0;
-    this.called = [];
 
     Object.keys(args)
       .forEach((key) => {
