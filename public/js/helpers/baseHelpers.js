@@ -67,7 +67,7 @@ const convert = {
   }
 };
 
-// return aproximately return n more or less percentage
+// return aproximately n more or less percentage
 const aprox = (n, percentage) => {
   if (n && percentage) return rand.on.n(n - n * ((percentage || 0) / 100), n + n * ((percentage || 0) / 100));
   return n;

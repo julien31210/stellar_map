@@ -37,7 +37,7 @@ const init = () => {
   const geometry = new THREE.BoxGeometry(.01, .01, .01);
   const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const crossAir = new THREE.Object3D();
-  // for (let i = 0; i < 4; i += 1) {
+
   const cube = new THREE.Mesh(geometry, material);
   cube.position.set(.02, 0, 0);
   const cube1 = new THREE.Mesh(geometry, material);
@@ -47,7 +47,7 @@ const init = () => {
   const cube3 = new THREE.Mesh(geometry, material);
   cube3.position.set(0, -.02, 0);
   crossAir.add(cube, cube1, cube2, cube3);
-  // }
+
   crossAir.position.set(0, 0, -5);
   camera.add(crossAir);
 
