@@ -9,10 +9,17 @@ let teleportIndex = '0';
 cameraIndex = [];
 let timeSpeedMultiplicator = 1;
 
+const mouseIsLocked = () => document.pointerLockElement === document.getElementById('blocker');
+
+const noPreventDefaultKeys = [116, 123, 27];
+
 onkeydown = onkeyup = (e) => {
   const k = e.keyCode;
   // console.log('e.keyCode', k);
   keys[k] = e.type === 'keydown';
+
+  if (!noPreventDefaultKeys.includes(k)) e.preventDefault();
+
   if (e.type === 'keydown') {
     if (k == current_controls.logger) console.log(logger);
     if (k == current_controls.timeSpeed.slowDown && timeSpeedMultiplicator > -5000000) timeSpeedMultiplicator -= Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
@@ -21,80 +28,54 @@ onkeydown = onkeyup = (e) => {
     if (k == current_controls.camera.slowDown) mouseWheelSpeed -= mouseWheelSpeed / 2;
     if (k == current_controls.camera.toggleAutoSpeed) autoSpeedToggled = !autoSpeedToggled;
     if (k == 13) {
-      if (document.pointerLockElement === document.getElementById('blocker')) document.exitPointerLock();
-      else document.getElementById('blocker').requestPointerLock();
+      if (!mouseIsLocked()) {
+        document.getElementById('blocker').requestPointerLock(); // lock the mouse
+      } else document.exitPointerLock(); // unlock the mouse
+
     }
     if (k === 192) animate();
 
     if (k == current_controls.camera.teleportToNextIndex && parseInt(teleportIndex, 10) + 1 <= cameraIndex.length) {
       teleportIndex = parseInt(teleportIndex, 10) + 1;
-      if (cameraIndex[teleportIndex - 1]) teleportTo(cameraIndex[teleportIndex - 1]);
+      if (cameraIndex[teleportIndex - 1]) camera.teleportTo(cameraIndex[teleportIndex - 1]);
     }
     if (k == current_controls.camera.teleportToPrevIndex && teleportIndex - 1 > 0) {
       teleportIndex = parseInt(teleportIndex, 10) - 1;
-      if (cameraIndex[teleportIndex - 1]) teleportTo(cameraIndex[teleportIndex - 1]);
+      if (cameraIndex[teleportIndex - 1]) camera.teleportTo(cameraIndex[teleportIndex - 1]);
     }
   }
-
 };
 
 onmousemove = (e) => {
+  if (camera.onMouseMove) camera.onMouseMove(e, mousepressed);
 
-  const isLocked = document.pointerLockElement === document.getElementById('blocker');
-
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-  const newRot = { x: e.clientX, y: e.clientY };
-  if (mousepressed && !isLocked) {
-    const p = camera.rotation;
-    camera.rotateX(((lastRot.y - newRot.y) / (100 / mouseSen)) * delta);
-    camera.rotateY(((lastRot.x - newRot.x) / (100 / mouseSen)) * delta);
-  }
-  lastRot = newRot;
-
-  if (!isLocked) return;
-
-  const movementX = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
-  const movementY = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
-  camera.rotateX((-movementY / (150 / mouseSen)) * delta);
-  camera.rotateY((-movementX / (150 / mouseSen)) * delta);
 };
 
 oncontextmenu = (e) => {
   e.preventDefault();
-  mousepressed = false;
-  if (mouseOvers.length) {
-    console.log(convert.to(mouseOvers[0].distance));
 
-    cameraIndex.forEach((el) => {
-      if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
-        console.log(mouseOvers[0]);
-        if (typeof mouseOvers[0].onRightClick === 'function') mouseOvers[0].onRightClick();
-      }
-    });
+  if (camera.onContextMenu) camera.onContextMenu(e);
 
+  if (!mouseIsLocked() && mouseOvers.length && getAstreByUuid(mouseOvers[0].object.uuid)) {
+    console.log(getAstreByUuid(mouseOvers[0].object.uuid));
   }
 };
 
 onmousedown = (e) => {
   e.preventDefault();
 
-  if (e.type !== 'contextmenu') {
+  if (e.button === 0) { // if pressed button is left button
     mousepressed = true;
 
-    if (mouseOvers.length) {
-      cameraIndex.forEach((el) => {
-        if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
-          console.log(mouseOvers[0]);
-          if (typeof mouseOvers[0].onLeftClick === 'function') mouseOvers[0].onLeftClick();
-        }
-      });
+    if (!mouseIsLocked() && mouseOvers.length && getAstreByUuid(mouseOvers[0].object.uuid)) {
+      console.log(getAstreByUuid(mouseOvers[0].object.uuid));
     }
   }
 };
 onmouseup = (e) => {
-  mousepressed = false;
+  if (e.button === 0) { // if released button is left button
+    mousepressed = false;
+  }
 };
 onmousewheel = (e) => {
   e.preventDefault();

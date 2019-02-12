@@ -30,26 +30,8 @@ const init = () => {
   scene = new THREE.Scene();
   scene.updateMatrixWorld();
 
-  // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs') / 1000);
-  scene.add(camera);
-
-  const geometry = new THREE.BoxGeometry(.01, .01, .01);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  const crossAir = new THREE.Object3D();
-
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.set(.02, 0, 0);
-  const cube1 = new THREE.Mesh(geometry, material);
-  cube1.position.set(-.02, 0, 0);
-  const cube2 = new THREE.Mesh(geometry, material);
-  cube2.position.set(0, .02, 0);
-  const cube3 = new THREE.Mesh(geometry, material);
-  cube3.position.set(0, -.02, 0);
-  crossAir.add(cube, cube1, cube2, cube3);
-
-  crossAir.position.set(0, 0, -5);
-  camera.add(crossAir);
+  // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
+  camera = new Camera({ camera: { fov, screenRatio: window.innerWidth / window.innerHeight, minDistance: 0.001, maxDistance: convert.to('15parsecs') / 1000 } });
 
   // AmbientLight really low light
   const ambient = new THREE.AmbientLight(0x060606);
@@ -151,6 +133,6 @@ init();
 
   animate();
   setTimeout(() => {
-    teleportTo(univers);
+    camera.teleportTo(univers);
   }, 250);
 })();
