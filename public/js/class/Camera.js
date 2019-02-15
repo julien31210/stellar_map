@@ -3,7 +3,7 @@ class Camera extends THREE.PerspectiveCamera {
     super(fov, screenRatio, minDistance, maxDistance);
     this.lastRot;
     scene.add(this);
-    this.turnCrossAirOn()
+    this.turnCrossAirOn();
   }
 
   teleportTo(o) {
@@ -107,7 +107,10 @@ class Camera extends THREE.PerspectiveCamera {
   turnCrossAirOff() {
     console.log('turnCrossAirOff');
     if (this.crossAir) this.remove(this.crossAir);
-    else this.initCrossAir();
+    else {
+      this.initCrossAir();
+      this.turnCrossAirOff();
+    }
   }
 
 }

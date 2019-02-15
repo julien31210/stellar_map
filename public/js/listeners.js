@@ -47,14 +47,14 @@ onkeydown = onkeyup = (e) => {
 };
 
 onmousemove = (e) => {
-  if (camera.onMouseMove) camera.onMouseMove(e, mousepressed);
+  if (camera && camera.onMouseMove) camera.onMouseMove(e, mousepressed);
 
 };
 
 oncontextmenu = (e) => {
   e.preventDefault();
 
-  if (camera.onContextMenu) camera.onContextMenu(e);
+  if (camera && camera.onContextMenu) camera.onContextMenu(e);
 
   if (!mouseIsLocked() && mouseOvers.length && getAstreByUuid(mouseOvers[0].object.uuid)) {
     console.log(getAstreByUuid(mouseOvers[0].object.uuid));
