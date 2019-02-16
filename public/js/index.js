@@ -107,12 +107,11 @@ const animate = () => {
   logger.camPos = camera.position;
   logger.univers = univers;
   logger.cameraSpeed = `${mouseWheelSpeed}Km/s`;
-  logger.mouseOvers = mouseOvers;
   logger.time.s += delta * timeSpeedMultiplicator;
-  logger.time.m = logger.time.s / 60;
-  logger.time.h = logger.time.m / 60;
-  logger.time.j = logger.time.h / 24;
-  logger.time.a = logger.time.j / 365;
+  logger.time.m = Math.floor(logger.time.s / 60);
+  logger.time.h = Math.floor(logger.time.m / 60);
+  logger.time.j = Math.floor(logger.time.h / 24);
+  logger.time.a = Math.floor(logger.time.j / 365);
 
 
   // on appel la fonction animate() récursivement à chaque frame
