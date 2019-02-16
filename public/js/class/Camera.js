@@ -204,21 +204,16 @@ class Camera extends THREE.PerspectiveCamera {
       this.crossAirRotationCenter.getWorldQuaternion(crossAirWorldQ);
       crossAirWorldQ.normalize();
 
-      // Bring camera quaternion in direction of the world quaternion of the crossAir
-      const cameraQ = this.quaternion;
-      const angle = crossAirWorldQ.angleTo(cameraQ);
+      // Calculate how mutch strenght we want in flexibillity between crossair and camera
+      let strenght = 7.5 * delta;
+      strenght = strenght >= 1 ? 1 : strenght;
 
-      cameraQ.slerp(crossAirWorldQ, .55 + (angle * 2 * delta));
+      // Bring camera quaternion in direction of the world quaternion of the crossAir
+      this.quaternion.slerp(crossAirWorldQ, strenght);
 
       // Bring quaternion of the crossAir in direction of the center of the screen (0, 0, 0)
       const center = new THREE.Quaternion(0, 0, 0, 1);
-
-      const crossAirQ = this.crossAirRotationCenter.quaternion.normalize();
-      const angle2 = crossAirQ.angleTo(cameraQ);
-
-      crossAirQ.slerp(center, .55 + (angle2 * 2 * delta));
-
-      this.crossAirRotationCenter.applyQuaternion(crossAirQ);
+      this.crossAirRotationCenter.quaternion.slerp(center, strenght);
     }
 
     // RAYCASTERS
@@ -243,7 +238,7 @@ class Camera extends THREE.PerspectiveCamera {
 
     if (aimedAstre) {
 
-      const d = aimedAstre.getDistanceToCamera(camera);
+      const d = aimedAstre.getDistanceToCamera(this);
       const { radius } = aimedAstre;
 
       // '"Le Saut Quantique", omelette du fromage'
