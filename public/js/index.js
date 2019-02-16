@@ -1,4 +1,4 @@
-let renderer, scene, camera, lastRot, cameraRaycaster, crossAirRaycaster, crossAirOvers, mouse, cameraClipedTo, univers, controlsPointLocker, pointLockerRaycaster;
+let renderer, scene, camera, univers;
 
 
 let delta = 0;
@@ -6,11 +6,7 @@ const clock = new THREE.Clock();
 
 const baseTimeSpeed = .1; // how many thousands seconds pass in one second
 
-const mouseSen = 1;
 const keys = {};
-let mouseOvers = [];
-
-const fov = 65;
 
 const logger = {
   time: { s: 0, m: 0, h: 0, j: 0, a: 0 }
@@ -31,15 +27,21 @@ const init = () => {
   scene.updateMatrixWorld();
 
   // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
-  camera = new Camera({ camera: { fov, screenRatio: window.innerWidth / window.innerHeight, minDistance: 0.001, maxDistance: convert.to('15parsecs') / 1000 } });
+  camera = new Camera({
+    camera:
+    {
+      fov: 65,
+      screenRatio: window.innerWidth / window.innerHeight, minDistance: 0.001,
+      maxDistance: convert.to('15parsecs') / 1000
+    },
+    mouse: {
+      mouseSen: 1
+    }
+  });
 
   // AmbientLight really low light
   const ambient = new THREE.AmbientLight(0x060606);
   scene.add(ambient);
-
-  mouse = new THREE.Vector2();
-  cameraRaycaster = new THREE.Raycaster();
-  crossAirRaycaster = new THREE.Raycaster();
 
 
   // on effectue le rendu de la scène
@@ -57,44 +59,12 @@ const animate = () => {
 
   frameCount += 1;
 
-  cameraRaycaster.setFromCamera(mouse, camera);
-  mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
+  if (camera) camera.animate(delta);
 
-  crossAirRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-  crossAirOvers = crossAirRaycaster.intersectObjects(scene.children, true);
-  if (crossAirOvers[0] && getAstreByUuid(crossAirOvers[0].object.uuid) && autoSpeedToggled) {
-
-    const aimedAstre = getAstreByUuid(crossAirOvers[0].object.uuid);
-
-    const d = aimedAstre.getDistanceToCamera(camera);
-    const { radius } = aimedAstre;
-    const newSpeed = (d ** 1.075) - (radius ** 1.1);
-
-    autoSpeed = newSpeed;
-    if (d < radius * 7) {
-      mouseWheelSpeed = d / 1.5;
-      autoSpeed = mouseWheelSpeed;
-    }
-
-  } else {
-    autoSpeedToggled = false;
-  }
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-
-      if (k === current_controls.forward) {
-        if (!autoSpeedToggled) camera.translateZ(-mouseWheelSpeed * delta)
-        else camera.translateZ(-autoSpeed * delta);
-      }
-      if (k === current_controls.back) camera.translateZ(mouseWheelSpeed * delta);
-      if (k === current_controls.right) camera.translateX(mouseWheelSpeed * delta);
-      if (k === current_controls.left) camera.translateX(-mouseWheelSpeed * delta);
-      if (k === current_controls.up) camera.translateY(mouseWheelSpeed * delta);
-      if (k === current_controls.down) camera.translateY(-mouseWheelSpeed * delta);
-
-      if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
-      if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
+      camera.quickRepeatListeners(k);
     }
   });
 
