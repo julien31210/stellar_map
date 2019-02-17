@@ -28,6 +28,8 @@ class Camera extends THREE.PerspectiveCamera {
     this.mousePressed = false;
 
     this.teleportIndex = 0;
+
+    this.easyFindHud = [];
   }
 
   teleportTo(obj) {
@@ -51,6 +53,8 @@ class Camera extends THREE.PerspectiveCamera {
     this.applyMatrix(new THREE.Matrix4().getInverse(obj.groupThree.matrixWorld));
     obj.groupThree.add(this);
 
+    // Add system we cliped to the hud
+    this.addToEasyfind(obj);
   }
 
   unClip() {
@@ -59,7 +63,9 @@ class Camera extends THREE.PerspectiveCamera {
       this.clipedTo.groupThree.remove(this);
       scene.add(this);
 
-      this.clipedTo = false;
+      // Clip to the orbital parent of the object we unclip
+      if (this.clipedTo.orbit && this.clipedTo.orbit.parent) this.clipTo(this.clipedTo.orbit.parent);
+      else this.clipedTo = false;
     }
   }
 
@@ -84,7 +90,7 @@ class Camera extends THREE.PerspectiveCamera {
     if (k == current_controls.camera.speedUp) mouseWheelSpeed += mouseWheelSpeed / 2;
     if (k == current_controls.camera.slowDown) mouseWheelSpeed -= mouseWheelSpeed / 2;
     if (k == current_controls.camera.toggleAutoSpeed) this.autoSpeedToggled = !this.autoSpeedToggled;
-
+    if (k === 8) this.resetEasyfind();
     if (k == 13) {
       if (!this.isLocked) {
         document.getElementById('blocker').requestPointerLock(); // lock the mouse
@@ -126,7 +132,6 @@ class Camera extends THREE.PerspectiveCamera {
   onMouseUp(e) {
     if (e.button === 0) this.mousePressed = false;
   }
-
 
   onMouseMove(e) {
 
@@ -171,7 +176,8 @@ class Camera extends THREE.PerspectiveCamera {
     cube3.position.set(0, -.02, 0);
     this.crossAir.add(cube, cube1, cube2, cube3);
 
-    this.crossAir.position.set(0, 0, -5);
+
+    this.crossAir.position.set(0, 0, -3);
 
     this.crossAirRotationCenter.add(this.crossAir);
 
@@ -192,10 +198,102 @@ class Camera extends THREE.PerspectiveCamera {
     }
   }
 
+  addToEasyfind(astre) {
+
+    if (astre && astre.isAstre) {
+
+
+      const newCircle = (radius, quality) => {
+        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        const geometry = new THREE.Geometry();
+        const r = radius || .25;
+        const circleQuality = quality || 4;
+        const tilt = Math.PI * .25; // 45 deg
+
+        for (let i = 0; i <= circleQuality; i += 1) {
+          const radPos = i * (Math.PI * 2 / circleQuality) + tilt;
+          const x = r * Math.sin(radPos);
+          const y = r * Math.cos(radPos);
+
+          geometry.vertices.push(new THREE.Vector3(x, y, 0));
+        }
+        return new THREE.Line(geometry, material);
+      };
+
+      const icons = {
+        Planet: () => newCircle(.2, 6),
+        System: false, // no icons for systems
+        BinaryStars: () => newCircle(.2, 6), // TO DO: use binary stars infos
+        Galaxy: (galaxy) => {
+
+          const { branchesNumber } = galaxy;
+          const halfSysNumber = 25;
+          const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+          const geometry = new THREE.Geometry();
+
+          for (let j = 0; j < branchesNumber; j += 1) {
+            const brancheSysNumber = Math.floor(halfSysNumber / branchesNumber);
+
+            for (let i = 0; i <= brancheSysNumber - 1; i += 1) {
+
+              const radPos = ((Math.PI * 2 * 1.2) / halfSysNumber)
+                * (brancheSysNumber - i)
+                + (Math.PI * 2 / branchesNumber)
+                * j;
+
+              const r = i / 10 + .1;
+
+              const x = r * Math.sin(radPos);
+              const y = r * Math.cos(radPos);
+              geometry.vertices.push(new THREE.Vector3(x, y, 0));
+
+            }
+          }
+          return new THREE.Points(geometry, material);
+
+        },
+        Star: () => newCircle(.2, 5)
+      };
+
+      const findIcon = (a) => {
+        if (!icons[a.constructor && a.constructor.name]) return false;
+        const icontype = icons[a.constructor && a.constructor.name];
+
+        return icontype(a);
+      };
+
+
+      // If the added astre is not already is the hud
+      if (!this.easyFindHud.find(el => el.astre.uuid === astre.uuid)) {
+        // We add it
+        const icon = findIcon(astre);
+        this.easyFindHud.push({ icon, astre });
+        if (icon) this.add(icon);
+      }
+
+      astre.childs.forEach((entity) => {
+        // If the added astre is not already is the hud
+        if (this.easyFindHud.find(el => el.astre.uuid === entity.uuid)) return;
+        // We add it
+        const childIcon = findIcon(entity);
+        this.easyFindHud.push({ icon: childIcon, astre: entity });
+
+        if (childIcon) this.add(childIcon);
+
+      });
+
+    }
+  }
+
+  resetEasyfind() {
+    this.easyFindHud.forEach((e) => { this.remove(e.icon); });
+    this.easyFindHud = [];
+  }
+
   animate(delta) {
     this.isLocked = document.pointerLockElement === document.getElementById('blocker');
     const cliped = this.clipedTo;
-    if (cliped && cliped.radius * 10 < cliped.getDistanceToCamera(this)) this.unClip();
+    if (cliped && cliped.radius * 10 < cliped.getDistanceTo(this)) this.unClip();
 
     if (this.isLocked) {
 
@@ -234,11 +332,19 @@ class Camera extends THREE.PerspectiveCamera {
 
     const crossAirIntersect = crossAirRaycaster.intersectObjects(scene.children, true);
 
-    const aimedAstre = crossAirIntersect[0] ? getAstreByUuid(crossAirIntersect[0].object && crossAirIntersect[0].object.uuid) : false;
+    const aimedAstre = crossAirIntersect.length > 0
+      ? crossAirIntersect
+        .reverse()
+        .reduce((r, el) => {
+          const astre = getAstreByUuid(el.object && el.object.uuid);
+          if (astre) return astre;
+          return r;
+        }, undefined)
+      : undefined;
 
     if (aimedAstre) {
 
-      const d = aimedAstre.getDistanceToCamera(this);
+      const d = aimedAstre.getDistanceTo(this);
       const { radius } = aimedAstre;
 
       // '"Le Saut Quantique", omelette du fromage'
@@ -267,6 +373,22 @@ class Camera extends THREE.PerspectiveCamera {
     // MOUSE RAY
     this.cameraRaycaster.setFromCamera(this.mouse, this);
     this.mouseOvers = this.cameraRaycaster.intersectObjects(scene.children, true);
+
+    // HUD
+    // DISPLAY SYS (addToEasyfind) rendering
+    this.easyFindHud.forEach((el) => {
+
+      if (!el.icon) return;
+
+      // Get astre's world position
+      const astredPos = new THREE.Vector3();
+      el.astre.groupThree.getWorldPosition(astredPos);
+      // transform position to camera local
+      this.worldToLocal(astredPos);
+      // set the vector's length
+      astredPos.setLength(60);
+      el.icon.position.set(astredPos.x, astredPos.y, astredPos.z);
+    });
 
   }
 
