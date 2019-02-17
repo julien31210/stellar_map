@@ -1,6 +1,9 @@
 
 class Astre {
   constructor(args) {
+
+    this.isAstre = true;
+
     this.groupThree = new THREE.Group();
     this.uuid = this.groupThree.uuid;
     this.lifeTime = 0;
