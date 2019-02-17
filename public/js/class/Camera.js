@@ -54,7 +54,7 @@ class Camera extends THREE.PerspectiveCamera {
     obj.groupThree.add(this);
 
     // Add system we cliped to the hud
-    if (obj.realLifeTime > 5) this.addToEasyfind(obj);
+    this.addToEasyfind(obj);
   }
 
   unClip() {
