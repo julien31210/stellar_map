@@ -27,7 +27,7 @@ class Camera extends THREE.PerspectiveCamera {
     this.mouse = new THREE.Vector2();
     this.mousePressed = false;
 
-    this.teleportIndex = 0;
+    this.teleportIndex =
 
     this.easyFindHud = [];
   }
@@ -133,7 +133,6 @@ class Camera extends THREE.PerspectiveCamera {
     if (e.button === 0) this.mousePressed = false;
   }
 
-
   onMouseMove(e) {
 
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -177,6 +176,8 @@ class Camera extends THREE.PerspectiveCamera {
     cube3.position.set(0, -.02, 0);
     this.crossAir.add(cube, cube1, cube2, cube3);
 
+  
+  
     this.crossAir.position.set(0, 0, -3);
 
     this.crossAirRotationCenter.add(this.crossAir);
