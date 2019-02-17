@@ -195,7 +195,7 @@ class Camera extends THREE.PerspectiveCamera {
   animate(delta) {
     this.isLocked = document.pointerLockElement === document.getElementById('blocker');
     const cliped = this.clipedTo;
-    if (cliped && cliped.radius * 10 < cliped.getDistanceToCamera(this)) this.unClip();
+    if (cliped && cliped.radius * 10 < cliped.getDistanceTo(this)) this.unClip();
 
     if (this.isLocked) {
 
@@ -238,7 +238,7 @@ class Camera extends THREE.PerspectiveCamera {
 
     if (aimedAstre) {
 
-      const d = aimedAstre.getDistanceToCamera(this);
+      const d = aimedAstre.getDistanceTo(this);
       const { radius } = aimedAstre;
 
       // '"Le Saut Quantique", omelette du fromage'
