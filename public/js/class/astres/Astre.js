@@ -1,6 +1,9 @@
 
 class Astre {
   constructor(args) {
+
+    this.isAstre = true;
+
     this.groupThree = new THREE.Group();
     this.uuid = this.groupThree.uuid;
     this.lifeTime = 0;
@@ -74,11 +77,11 @@ class Astre {
 
   }
 
-  getDistanceToCamera(camera) {
-    const camVect = new THREE.Vector3();
-    camera.getWorldPosition(camVect);
+  getDistanceTo(obj) {
+    const v = new THREE.Vector3();
+    obj.getWorldPosition(v);
 
-    return camVect.distanceTo(this.getWorldPosition());
+    return v.distanceTo(this.getWorldPosition());
   }
 
   getWorldPosition() {
@@ -89,7 +92,7 @@ class Astre {
   }
 
   manageVisibility(camera) {
-    const d = this.getDistanceToCamera(camera);
+    const d = this.getDistanceTo(camera);
 
     if (this.manageLight && this.threeObjInited) this.manageLight(d);
 
@@ -106,7 +109,7 @@ class Astre {
         this.threeObjInited = true;
 
         setTimeout(() => {
-          if (this.getDistanceToCamera(camera) > 6000 * this.radius) {
+          if (this.getDistanceTo(camera) > 6000 * this.radius) {
             console.log(`wrongInitThreeobj on ${this.type || this.constructor.name}${this.uuid.slice(0, 4)}`);
           }
         }, 100);
