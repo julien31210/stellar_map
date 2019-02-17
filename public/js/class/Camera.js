@@ -59,7 +59,9 @@ class Camera extends THREE.PerspectiveCamera {
       this.clipedTo.groupThree.remove(this);
       scene.add(this);
 
-      this.clipedTo = false;
+      // Clip to the orbital parent of the object we unclip
+      if (this.clipedTo.orbit && this.clipedTo.orbit.parent) this.clipTo(this.clipedTo.orbit.parent);
+      else this.clipedTo = false;
     }
   }
 
