@@ -89,7 +89,40 @@ const animate = () => {
 };
 
 init();
-(() => {
+(() => { // document on ready
+
+  console.log(current_controls);
+
+  const newUl = () => document.createElement('ul');
+  const newLi = () => document.createElement('li');
+
+  const recursivObjectToHtml = (o, html) => {
+
+    Object.keys(o)
+      .forEach((key) => {
+        if (typeof o[key] === 'object') {
+          const li = newLi();
+          const ul = newUl();
+          li.appendChild(document.createTextNode(key));
+          li.appendChild(recursivObjectToHtml(o[key], ul));
+          html.appendChild(li);
+        } else {
+          const li = newLi();
+          li.appendChild(document.createTextNode(`${key}: ${keyCode(parseInt(o[key], 10))}`));
+
+          html.appendChild(li);
+        }
+      });
+
+    return html;
+  };
+
+  const controlsList = recursivObjectToHtml(current_controls, newUl());
+
+  document.getElementById('instructions')
+    .appendChild(controlsList);
+
+  // String.fromCharCode(e.keyCode);
 
   const { int: rInt, n } = rand.on;
   univers = new Galaxy({

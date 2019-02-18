@@ -3,3 +3,19 @@
     padding: 0;
     overflow:hidden;
 }
+
+#container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#instruction {
+    display: block;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
