@@ -30,6 +30,7 @@ class Camera extends THREE.PerspectiveCamera {
     this.teleportIndex = 0;
 
     this.easyFindHud = [];
+    this.easyFindIconSize = .5;
   }
 
   teleportTo(obj) {
@@ -220,12 +221,56 @@ class Camera extends THREE.PerspectiveCamera {
         return new THREE.Line(geometry, material);
       };
 
-      const icons = {
-        Planet: () => newCircle(.2, 6),
-        System: false, // no icons for systems
-        BinaryStars: () => newCircle(.2, 6), // TO DO: use binary stars infos
-        Galaxy: (galaxy) => {
+      const newPoint = () => {
+        const geo = new THREE.Geometry();
+        const mat = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        geo.vertices.push(new THREE.Vector3(0, 0, 0));
+        return new THREE.Points(geo, mat);
+      };
 
+      const icons = {
+        Planet: () => newCircle(this.easyFindIconSize, 6),
+        System: false, // no icons for systems
+        BinaryStars: (binaryStars) => {
+          const iconSize = this.easyFindIconSize * 1.5;
+          const totalIconDistance = iconSize + .1;
+          const totalVertices = 12;
+          // Get real stars radius
+          const realR1 = binaryStars.star1.radius;
+          const realR2 = binaryStars.star2.radius;
+          // Get real stars orbits distances
+          const realDist1 = binaryStars.star1.orbit.distance;
+          const realDist2 = binaryStars.star2.orbit.distance;
+          // Totals
+          const totalRealRadius = realR1 + realR2;
+          const totalRealDistance = realDist1 + realDist2;
+
+          // Icon stars radius
+          const iconR1 = realR1 * iconSize / totalRealRadius;
+          const iconR2 = realR2 * iconSize / totalRealRadius;
+
+          // Icon stars distances from the middle of the icon
+          const iconDist1 = realDist2 * totalIconDistance / totalRealDistance;
+          const iconDist2 = realDist1 * totalIconDistance / totalRealDistance;
+
+          // Icon stars distances from the middle of the icon (+ 2 to avoid to be at less than 3)
+          const verticesNumber1 = Math.ceil(totalVertices * iconR1) + 2;
+          const verticesNumber2 = Math.ceil(totalVertices * iconR2) + 2;
+
+          const star1 = newCircle(iconR1, verticesNumber1);
+          const star2 = newCircle(iconR2, verticesNumber2);
+
+          star1.position.set(-iconDist1, 0, 0);
+          star2.position.set(iconDist2, 0, 0);
+
+          const bs = new THREE.Object3D();
+
+          bs.add(star1, star2);
+
+          return bs;
+        }, // TO DO: use binary stars infos
+        Galaxy: (galaxy) => {
+          const iconSize = this.easyFindIconSize * 4;
           const { branchesNumber } = galaxy;
           // create icon taking into account its number of branches
           const sysNumberPerBranche = 10;
@@ -244,15 +289,15 @@ class Camera extends THREE.PerspectiveCamera {
                 + (Math.PI * 2 / branchesNumber)
                 * j;
 
-              // Define distance between galactic center and sys
-              const r = i / 10 + .1;
+              const r = (iconSize / sysNumberPerBranche) * i // Define distance between sys
+                + iconSize / 10; // Define distance between galactic center and sys
 
-              // Position the vertice of the lines
+              // Position the vertices of the lines
               const linex = r * Math.sin(radPos);
               const liney = r * Math.cos(radPos);
-              // Position the point
-              const pointx = (r + r / branchesNumber / 2) * Math.sin(radPos + Math.PI / branchesNumber / 5);
-              const pointy = (r + r / branchesNumber / 2) * Math.cos(radPos + Math.PI / branchesNumber / 5);
+              // Position the points with radial offset
+              const pointx = r * Math.sin(radPos + Math.PI / branchesNumber / 5);
+              const pointy = r * Math.cos(radPos + Math.PI / branchesNumber / 5);
 
               // Push the vertices
               geometry.vertices.push(new THREE.Vector3(pointx, pointy, 0));
@@ -272,7 +317,7 @@ class Camera extends THREE.PerspectiveCamera {
           // g.children[0].material.color.set(0x00f9ff); // To set color
           return g;
         },
-        Star: () => newCircle(.2, 5)
+        Star: () => newCircle(this.easyFindIconSize * 1.2, 8)
       };
 
       const findIcon = (a) => {
