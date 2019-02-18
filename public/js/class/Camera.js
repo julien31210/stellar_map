@@ -227,30 +227,50 @@ class Camera extends THREE.PerspectiveCamera {
         Galaxy: (galaxy) => {
 
           const { branchesNumber } = galaxy;
-          const halfSysNumber = 25;
+          // create icon taking into account its number of branches
+          const sysNumberPerBranche = 10;
+
           const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
           const geometry = new THREE.Geometry();
 
+          const lines = [];
           for (let j = 0; j < branchesNumber; j += 1) {
-            const brancheSysNumber = Math.floor(halfSysNumber / branchesNumber);
+            const lineGeometry = new THREE.Geometry();
 
-            for (let i = 0; i <= brancheSysNumber - 1; i += 1) {
-
-              const radPos = ((Math.PI * 2 * 1.2) / halfSysNumber)
-                * (brancheSysNumber - i)
+            for (let i = 0; i <= sysNumberPerBranche - 1; i += 1) {
+              // Define radial position of the vertice
+              const radPos = ((Math.PI * 2) / sysNumberPerBranche / branchesNumber)
+                * (sysNumberPerBranche - i)
                 + (Math.PI * 2 / branchesNumber)
                 * j;
 
+              // Define distance between galactic center and sys
               const r = i / 10 + .1;
 
-              const x = r * Math.sin(radPos);
-              const y = r * Math.cos(radPos);
-              geometry.vertices.push(new THREE.Vector3(x, y, 0));
+              // Position the vertice of the lines
+              const linex = r * Math.sin(radPos);
+              const liney = r * Math.cos(radPos);
+              // Position the point
+              const pointx = (r + r / branchesNumber / 2) * Math.sin(radPos + Math.PI / branchesNumber / 5);
+              const pointy = (r + r / branchesNumber / 2) * Math.cos(radPos + Math.PI / branchesNumber / 5);
 
+              // Push the vertices
+              geometry.vertices.push(new THREE.Vector3(pointx, pointy, 0));
+              lineGeometry.vertices.push(new THREE.Vector3(linex, liney, 0));
             }
+            lines.push(new THREE.Line(lineGeometry, material));
           }
-          return new THREE.Points(geometry, material);
+          const points = new THREE.Points(geometry, material);
 
+          const g = new THREE.Object3D();
+
+          g.add(
+            points,
+            ...lines
+          );
+
+          // g.children[0].material.color.set(0x00f9ff); // To set color
+          return g;
         },
         Star: () => newCircle(.2, 5)
       };
