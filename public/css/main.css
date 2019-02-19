@@ -1,7 +1,7 @@
-* {
+body {
     margin: 0;
     padding: 0;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 #container {
@@ -11,7 +11,7 @@
     z-index: 0;
 }
 
-#instruction {
+#instructions, #lockedInstructions {
     display: block;
     color: white;
     position: absolute;

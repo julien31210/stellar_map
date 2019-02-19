@@ -64,6 +64,13 @@ const animate = () => {
 
   if (camera) camera.animate(delta);
 
+  if (mouseIsLocked()) {
+    instructions.style.display = 'none';
+    lockedInstructions.style.display = 'block';
+  } else {
+    instructions.style.display = 'block';
+    lockedInstructions.style.display = 'none';
+  }
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
@@ -106,12 +113,12 @@ init();
         if (typeof o[key] === 'object') {
           const li = newLi();
           const ul = newUl();
-          li.appendChild(document.createTextNode(key));
+          li.appendChild(document.createTextNode(`${key}:`));
           li.appendChild(recursivObjectToHtml(o[key], ul));
           html.appendChild(li);
         } else {
           const li = newLi();
-          li.appendChild(document.createTextNode(`${key}: ${keyCode(parseInt(o[key], 10))}`));
+          li.appendChild(document.createTextNode(`${key}: ${keyCode(parseInt(o[key], 10)).toUpperCase()}`));
 
           html.appendChild(li);
         }
@@ -122,8 +129,12 @@ init();
 
   const controlsList = recursivObjectToHtml(current_controls, newUl());
 
-  document.getElementById('instructions')
-    .appendChild(controlsList);
+  const instructions = document.getElementById('instructions');
+  const lockedInstructions = document.getElementById('lockedInstructions');
+
+  instructions.appendChild(controlsList);
+  instructions.style.display = 'block';
+  lockedInstructions.style.display = 'none';
 
   // String.fromCharCode(e.keyCode);
 
