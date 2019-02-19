@@ -22,6 +22,11 @@ const controls = {
       teleportToPrevIndex: '37',
       toggleAutoSpeed: '67'
     },
+    hud: {
+      resetEasyFindHud: '8',
+    },
+    screenLock: '13',
+    leaveScreenLock: '27',
   },
   qwerty: {
     forward: '87',
@@ -46,5 +51,10 @@ const controls = {
       teleportToPrevIndex: '37',
       toggleAutoSpeed: '67'
     },
+    hud: {
+      resetEasyFindHud: '8',
+    },
+    screenLock: '13',
+    leaveScreenLock: '27',
   }
 };

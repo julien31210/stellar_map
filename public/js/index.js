@@ -64,6 +64,13 @@ const animate = () => {
 
   if (camera) camera.animate(delta);
 
+  if (mouseIsLocked()) {
+    instructions.style.display = 'none';
+    lockedInstructions.style.display = 'block';
+  } else {
+    instructions.style.display = 'block';
+    lockedInstructions.style.display = 'none';
+  }
 
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
@@ -92,7 +99,44 @@ const animate = () => {
 };
 
 init();
-(() => {
+(() => { // document on ready
+
+  console.log(current_controls);
+
+  const newUl = () => document.createElement('ul');
+  const newLi = () => document.createElement('li');
+
+  const recursivObjectToHtml = (o, html) => {
+
+    Object.keys(o)
+      .forEach((key) => {
+        if (typeof o[key] === 'object') {
+          const li = newLi();
+          const ul = newUl();
+          li.appendChild(document.createTextNode(`${key}:`));
+          li.appendChild(recursivObjectToHtml(o[key], ul));
+          html.appendChild(li);
+        } else {
+          const li = newLi();
+          li.appendChild(document.createTextNode(`${key}: ${keyCode(parseInt(o[key], 10)).toUpperCase()}`));
+
+          html.appendChild(li);
+        }
+      });
+
+    return html;
+  };
+
+  const controlsList = recursivObjectToHtml(current_controls, newUl());
+
+  const instructions = document.getElementById('instructions');
+  const lockedInstructions = document.getElementById('lockedInstructions');
+
+  instructions.appendChild(controlsList);
+  instructions.style.display = 'block';
+  lockedInstructions.style.display = 'none';
+
+  // String.fromCharCode(e.keyCode);
 
   const { int: rInt, n } = rand.on;
   univers = new Galaxy({
