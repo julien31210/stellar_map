@@ -53,11 +53,17 @@ oncontextmenu = (e) => {
     console.log(convert.to(mouseOvers[0].distance));
 
     cameraIndex.forEach((el) => {
-      if (mouseOvers[0] && mouseOvers[0].uuid === el.uuid) {
+      if (mouseOvers[0] && (el.childsIds.includes(mouseOvers[0].object.uuid))) {
+        console.log('openWindow');
         openWindow(el);
         if (typeof mouseOvers[0].onRightClick === 'function') mouseOvers[0].onRightClick();
       }
     });
+
+  }
+  if (menuMouseOvers[0]) {
+    console.log(menuMouseOvers[0].object);
+    sceneHUD.remove(menuMouseOvers[0].object);
 
   }
 };

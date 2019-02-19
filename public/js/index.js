@@ -77,7 +77,7 @@ const animate = () => {
   });
 
 
-  menuMouseOvers = raycaster.intersectObjects(sceneHUD.children);
+  menuMouseOvers = cameraRaycaster.intersectObjects(sceneHUD.children);
 
   cameraRaycaster.setFromCamera(mouse, camera);
   mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
