@@ -13,9 +13,9 @@ class Planet extends Astre {
           type: 'planet',
           orbit: {
             parent: this,
-            distance: convert.to(randOnN(384000 / 3, 384000 * 2)) / 1000,
+            distance: convert.to(rand.on.n(384000 / 3, 384000 * 2)) / 1000,
             eccentricity: .1,
-            tilt: randOnN(0, 180),
+            tilt: rand.on.n(0, 180),
           },
           mass: (7.36 * (10 ** 22))
         });
@@ -35,7 +35,7 @@ class Planet extends Astre {
     this.threeObj = new THREE.Mesh(geometry, material);
 
 
-    this.baseThreeObj.add(this.threeObj);
+    this.groupThree.add(this.threeObj);
 
     this.childsIds.push(this.threeObj.uuid);
   }

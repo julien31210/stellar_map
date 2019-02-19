@@ -4,11 +4,11 @@ class System extends Astre {
     super(args);
 
     // 1/3 to 1/2 of stars in univers are binaryStars => about 42%
-    const center = randOn100(100)
+    const center = rand.on.percent(42)
       ? new BinaryStars({
         name: `${this.name}'s center BinaryStars`,
         type1: this.centerType,
-        type2: randOnObject(starsTypes),
+        type2: rand.on.object(starsTypes),
         radius: convert.to(3474) / 1000,
         mass: 7.36 * (10 ** 22),
         orbit: { parent: this },
@@ -23,19 +23,19 @@ class System extends Astre {
 
     if (this.entities && this.entities.nb > 0) {
       for (let i = 0; i < this.entities.nb; i += 1) {
-        const entity = randOn100(95)
+        const entity = rand.on.percent(95)
           ? new Planet({
             completName: `${this.name}'s Planet${i + 1}`,
             name: `Planet${i + 1}`,
             radius: convert.to(3474) / 1000,
             color: 0x00cccc,
             type: 'planet',
-            moons: { nb: randOn100(50) ? 1 : 0 },
+            moons: { nb: rand.on.percent(50) ? 1 : 0 },
             orbit: {
               parent: this,
               distance: convert.to('149,6 M') / 1000,
               eccentricity: .1,
-              tilt: randOnN(0, 15),
+              tilt: rand.on.n(0, 15),
             },
             mass: (7.36 * (10 ** 22))
           })
@@ -46,11 +46,11 @@ class System extends Astre {
               parent: this,
               distance: convert.to('149,6 M') / 1000,
               eccentricity: .1,
-              tilt: randOnN(0, 15),
+              tilt: rand.on.n(0, 15),
             },
           }));
 
-        entity.setRadialPosition(radiantRand());
+        entity.setRadialPosition(rand.radiant());
       }
     }
 
@@ -67,14 +67,15 @@ class System extends Astre {
   }
 
   initThreeObj() {
-    this.threeObj = this.baseThreeObj;
+    this.threeObj = this.groupThree;
 
-    const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
+    const geometry = new THREE.SphereGeometry(this.radius * 1.2, 25, 25);
     const material = new THREE.MeshBasicMaterial();
     const sphere = new THREE.Mesh(geometry, material);
     sphere.material.transparent = true;
     sphere.material.opacity = 0.3;
+    this.childsIds.push(sphere.uuid);
 
-    this.baseThreeObj.add(sphere);
+    this.groupThree.add(sphere);
   }
 }

@@ -3,7 +3,7 @@ class BinaryStars extends Astre {
   constructor(args) {
     super(args);
 
-    const tilt = radiantRand();
+    const tilt = rand.radiant();
 
     const star1 = new Star(this.type1({
       name: `${this.name}'s star1`,
@@ -37,7 +37,10 @@ class BinaryStars extends Astre {
     const dist = this.star1.orbit.distance + this.star2.orbit.distance;
 
     this.mass = m1 + m2;
-    this.radius = dist + this.star1.radius + this.star2.radius;
+    this.radius = dist
+      + (dist * .3) // for eccentricity
+      + this.star1.radius
+      + this.star2.radius;
 
     const dist1 = (m2 * dist) / (this.mass);
     const dist2 = (m1 * dist) / (this.mass);
@@ -71,11 +74,22 @@ class BinaryStars extends Astre {
     this.star1.radialPosition = 0;
     this.star2.radialPosition = Math.PI;
 
+    this.childs.push(this.star1, this.star2);
 
   }
 
   initThreeObj() {
-    this.threeObj = this.baseThreeObj;
+    this.threeObj = this.groupThree;
+
+    const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
+    const material = new THREE.MeshBasicMaterial();
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.material.transparent = true;
+    sphere.material.opacity = 0.02;
+    this.childsIds.push(sphere.uuid);
+
+    this.groupThree.add(sphere);
+
   }
 
 }

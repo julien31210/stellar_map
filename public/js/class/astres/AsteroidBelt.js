@@ -1,0 +1,3 @@
+
+class AsteroiBelt extends Astre {
+}

@@ -1,17 +1,12 @@
-let renderer, scene, sceneHUD, camera, lastRot, cameraRaycaster, mouse, cameraClipedTo, univers;
 
+let renderer, scene, camera, univers, sceneHUD;
 
 let delta = 0;
 const clock = new THREE.Clock();
 
 const baseTimeSpeed = .1; // how many thousands seconds pass in one second
 
-const mouseSen = 1;
 const keys = {};
-let mouseOvers = [];
-let menuMouseOvers = [];
-
-const fov = 35;
 
 const logger = {
   time: { s: 0, m: 0, h: 0, j: 0, a: 0 }
@@ -33,20 +28,24 @@ const init = () => {
 
   scene.updateMatrixWorld();
 
-  // on initialise la camera que l'on place ensuite sur la scène
-  camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.001, convert.to('15parsecs') / 1000);
-  camera.position.set(0, 0, 200000000);
-  scene.add(camera);
+  // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
+  camera = new Camera({
+    camera:
+    {
+      fov: 65,
+      screenRatio: window.innerWidth / window.innerHeight, minDistance: 0.001,
+      maxDistance: convert.to('15parsecs') / 1000
+    },
+    mouse: {
+      mouseSen: 1
+    }
+  });
 
   // AmbientLight really low light
   const ambient = new THREE.AmbientLight(0x060606);
   scene.add(ambient);
 
-  mouse = new THREE.Vector2();
-
-  cameraRaycaster = new THREE.Raycaster();
   initHUD();
-
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
@@ -63,24 +62,14 @@ const animate = () => {
 
   frameCount += 1;
 
+  if (camera) camera.animate(delta);
+
+
   Object.keys(keys).forEach((k) => {
     if (keys[k]) {
-      if (k === current_controls.forward) camera.translateZ(-speed * delta);
-      if (k === current_controls.back) camera.translateZ(speed * delta);
-      if (k === current_controls.right) camera.translateX(speed * delta);
-      if (k === current_controls.left) camera.translateX(-speed * delta);
-      if (k === current_controls.up) camera.translateY(speed * delta);
-      if (k === current_controls.down) camera.translateY(-speed * delta);
-      if (k === current_controls.roll.left) camera.rotateZ((Math.PI / mouseSen / 7) * delta);
-      if (k === current_controls.roll.right) camera.rotateZ(-(Math.PI / mouseSen / 7) * delta);
+      camera.quickRepeatListeners(k);
     }
   });
-
-
-  menuMouseOvers = cameraRaycaster.intersectObjects(sceneHUD.children);
-
-  cameraRaycaster.setFromCamera(mouse, camera);
-  mouseOvers = cameraRaycaster.intersectObjects(scene.children, true);
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
@@ -90,14 +79,12 @@ const animate = () => {
   // logger
   logger.camPos = camera.position;
   logger.univers = univers;
-  logger.cameraSpeed = `${speed}Km/s`;
-  logger.mouseOvers = mouseOvers;
-  logger.menu = menuMouseOvers;
+  logger.cameraSpeed = `${mouseWheelSpeed}Km/s`;
   logger.time.s += delta * timeSpeedMultiplicator;
-  logger.time.m = logger.time.s / 60;
-  logger.time.h = logger.time.m / 60;
-  logger.time.j = logger.time.h / 24;
-  logger.time.a = logger.time.j / 365;
+  logger.time.m = Math.floor(logger.time.s / 60);
+  logger.time.h = Math.floor(logger.time.m / 60);
+  logger.time.j = Math.floor(logger.time.h / 24);
+  logger.time.a = Math.floor(logger.time.j / 365);
 
 
   // on appel la fonction animate() récursivement à chaque frame
@@ -106,9 +93,18 @@ const animate = () => {
 
 init();
 (() => {
-  univers = new Galaxy({ name: `Galaxy${0 + 1}` });
+
+  const { int: rInt, n } = rand.on;
+  univers = new Galaxy({
+    name: `Galaxy${0 + 1}`,
+    branchesNumber: rInt(2, 5),
+    spiralStrength: n(1, 3),
+    density: n(1.2, 2.2),
+    sysNumber: 150
+  });
+
   animate();
   setTimeout(() => {
-    teleportTo(univers);
+    camera.teleportTo(univers);
   }, 250);
 })();

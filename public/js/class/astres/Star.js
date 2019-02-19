@@ -15,19 +15,17 @@ class Star extends Astre {
     this.light = light;
     this.childsIds.push(this.threeObj.uuid);
 
-    this.baseThreeObj.add(this.threeObj);
+    this.groupThree.add(this.threeObj);
   }
 
   turnLightOn() {
     this.threeObj.add(this.light);
     this.lightOn = true;
-    // console.log(this.name, ',', this.position, ', turnLightOn');
   }
 
   turnLightOff() {
     this.threeObj.remove(this.light);
     this.lightOn = false;
-    // console.log(this.name, ',', this.position, ', turnLightOff');
   }
 
   manageLight(d) {
