@@ -1,5 +1,5 @@
-let renderer, scene, camera, univers;
 
+let renderer, scene, camera, univers, sceneHUD;
 
 let delta = 0;
 const clock = new THREE.Clock();
@@ -24,6 +24,8 @@ const init = () => {
 
   // on initialise la scène
   scene = new THREE.Scene();
+  sceneHUD = new THREE.Scene();
+
   scene.updateMatrixWorld();
 
   // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
@@ -43,6 +45,7 @@ const init = () => {
   const ambient = new THREE.AmbientLight(0x060606);
   scene.add(ambient);
 
+  initHUD();
 
   // on effectue le rendu de la scène
   renderer.render(scene, camera);
