@@ -56,7 +56,7 @@ class Camera extends THREE.PerspectiveCamera {
     obj.groupThree.add(this);
 
     // Add system we cliped to the hud
-    this.addToEasyfind(obj);
+    this.updateEasyfind(obj);
   }
 
   unClip() {
@@ -205,7 +205,8 @@ class Camera extends THREE.PerspectiveCamera {
     }
   }
 
-  addToEasyfind(astre) {
+  updateEasyfind(astre) {
+    this.resetEasyfind();
 
     if (astre && astre.isAstre) {
 
@@ -341,6 +342,12 @@ class Camera extends THREE.PerspectiveCamera {
         this.easyFindHud.push({ icon, astre });
         if (icon) this.add(icon);
       }
+      if (astre.orbit && astre.orbit.parent && !this.easyFindHud.find(el => el.astre.uuid === astre.orbit.parent.uuid)) {
+        // We add it
+        const icon = findIcon(astre.orbit.parent);
+        this.easyFindHud.push({ icon, astre: astre.orbit.parent });
+        if (icon) this.add(icon);
+      }
 
       astre.childs.forEach((entity) => {
         // If the added astre is not already is the hud
@@ -447,7 +454,7 @@ class Camera extends THREE.PerspectiveCamera {
     this.menuMouseOvers = this.cameraRaycaster.intersectObjects(sceneHUD.children, true);
 
     // HUD
-    // DISPLAY SYS (addToEasyfind) rendering
+    // DISPLAY SYS (updateEasyfind) rendering
     this.easyFindHud.forEach((el) => {
 
       if (!el.icon) return;
