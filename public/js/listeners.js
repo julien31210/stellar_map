@@ -30,12 +30,10 @@ onkeydown = onkeyup = (e) => {
 
 onmousemove = (e) => {
   if (camera && camera.onMouseMove) camera.onMouseMove(e);
-
 };
 
 oncontextmenu = (e) => {
   e.preventDefault();
-
   if (camera && camera.onContextMenu) camera.onContextMenu(e);
 };
 

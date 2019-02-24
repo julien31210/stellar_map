@@ -23,6 +23,7 @@ class Camera extends THREE.PerspectiveCamera {
 
     this.cameraRaycaster = new THREE.Raycaster();
     this.mouseOvers = [];
+    this.menuMouseOvers = [];
 
     this.mouse = new THREE.Vector2();
     this.mousePressed = false;
@@ -126,7 +127,12 @@ class Camera extends THREE.PerspectiveCamera {
       !this.isLocked
       && this.mouseOvers.length
       && getAstreByUuid(this.mouseOvers[0].object.uuid)
-    ) console.log(getAstreByUuid(this.mouseOvers[0].object.uuid));
+    ) openWindow(getAstreByUuid(this.mouseOvers[0].object.uuid));
+
+    if (this.menuMouseOvers[0]) {
+      console.log(this.menuMouseOvers[0].object);
+      sceneHUD.remove(this.menuMouseOvers[0].object);
+    }
   }
 
 
@@ -438,6 +444,7 @@ class Camera extends THREE.PerspectiveCamera {
     // MOUSE RAY
     this.cameraRaycaster.setFromCamera(this.mouse, this);
     this.mouseOvers = this.cameraRaycaster.intersectObjects(scene.children, true);
+    this.menuMouseOvers = this.cameraRaycaster.intersectObjects(sceneHUD.children, true);
 
     // HUD
     // DISPLAY SYS (addToEasyfind) rendering
