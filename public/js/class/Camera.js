@@ -368,18 +368,30 @@ class Camera extends THREE.PerspectiveCamera {
     this.easyFindHud = [];
   }
 
+  getAstreByIconUuid(uuid) {
+    // stop this shit pass icon in each astre !
+    const a = this.easyFindHud.find(element => element.icon && element.icon.uuid === uuid);
+    if (a) return a;
+
+    return this.easyFindHud.find(element => element.icon
+      && element.icon.children
+      && element.icon.children.reduce((r, children) => {
+        if (children.uuid === uuid) return true;
+        return r;
+      }, false));
+  }
+
   animate(delta) {
     this.isLocked = document.pointerLockElement === document.getElementById('blocker');
     const cliped = this.clipedTo;
     if (cliped && cliped.radius * 10 < cliped.getDistanceTo(this)) this.unClip();
 
+    // Get world quaternion of the crossAir
+    const crossAirWorldQ = new THREE.Quaternion();
+    this.crossAirRotationCenter.getWorldQuaternion(crossAirWorldQ);
+    crossAirWorldQ.normalize();
+
     if (this.isLocked) {
-
-      // Get world quaternion of the crossAir
-      const crossAirWorldQ = new THREE.Quaternion();
-      this.crossAirRotationCenter.getWorldQuaternion(crossAirWorldQ);
-      crossAirWorldQ.normalize();
-
       // Calculate how mutch strenght we want in flexibillity between crossair and camera
       let strenght = 7.5 * delta;
       strenght = strenght >= 1 ? 1 : strenght;
@@ -410,20 +422,26 @@ class Camera extends THREE.PerspectiveCamera {
 
     const crossAirIntersect = crossAirRaycaster.intersectObjects(scene.children, true);
 
-    const aimedAstre = crossAirIntersect.length > 0
+    const aimed = crossAirIntersect.length > 0
       ? crossAirIntersect
-        .reverse()
         .reduce((r, el) => {
-          const astre = getAstreByUuid(el.object && el.object.uuid);
-          if (astre) return astre;
+          let temp = { astres: [], icons: [] };
+          if (r) temp = r;
+          const uuid = el.object && el.object.uuid;
+
+          const astre = getAstreByUuid(uuid);
+          if (astre) temp.astres.push(astre);
+          const icon = this.getAstreByIconUuid(uuid);
+          if (icon) temp.icons.push(icon);
+          if (temp.astres || temp.icons) return temp;
           return r;
         }, undefined)
       : undefined;
 
-    if (aimedAstre) {
+    if (aimed && aimed.astres && aimed.astres[0]) {
 
-      const d = aimedAstre.getDistanceTo(this);
-      const { radius } = aimedAstre;
+      const d = aimed.astres[0].getDistanceTo(this);
+      const { radius } = aimed.astres[0];
 
       // '"Le Saut Quantique", omelette du fromage'
       if (this.autoSpeedToggled) {
@@ -435,7 +453,7 @@ class Camera extends THREE.PerspectiveCamera {
       if (d < mouseWheelSpeed / 2 && !this.autoSpeedToggled) {
         mouseWheelSpeed = (d + radius) / 1.7;
       }
-      if (d < radius * 10) this.clipTo(aimedAstre);
+      if (d < radius * 10) this.clipTo(aimed.astres[0]);
 
       if (d < radius * 7) {
         mouseWheelSpeed = (d + radius) / 1.5;
@@ -446,6 +464,23 @@ class Camera extends THREE.PerspectiveCamera {
     } else {
       this.crossAirMaterial.color.set(0xffffff);
       this.autoSpeedToggled = false;
+    }
+
+    if (aimed && aimed.icons && aimed.icons[0]) {
+
+      const uuid = aimed.icons && aimed.icons[0].uuid;
+      const icon = this.getAstreByIconUuid(uuid);
+
+      if (icon) {
+        const iconAstrePos = new THREE.Vector3();
+        icon.astre.getWorldPosition(iconAstrePos); // get position of the aimed astre
+        this.worldToLocal(iconAstrePos); // transform position of the aimed astre to local (local to camera)
+
+        const q1 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), iconAstrePos.normalize());
+        // get the rotation needed to look (perfectly) in the astre direction
+
+        this.crossAirRotationCenter.quaternion.slerp(q1, 0.1);
+      }
     }
 
     // MOUSE RAY
