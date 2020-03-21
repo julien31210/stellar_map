@@ -12,9 +12,9 @@ const teleportTo = (o) => {
   };
 
   // teleportation start
-  o.groupThree.add(camera);
+  o.add(camera);
   camera.position.set(0, 0, o.radius * 7);
-  camera.lookAt(o.groupThree.position);
+  camera.lookAt(o.position);
   // camera.position.set(o.position.x, o.position.y, o.position.z + o.radius * 6);
   const cp = new THREE.Vector3();
   camera.getWorldPosition(cp);
@@ -26,7 +26,7 @@ const teleportTo = (o) => {
 
   const opos = new THREE.Vector3();
   const universpos = new THREE.Vector3();
-  o.groupThree.getWorldPosition(opos);
+  o.getWorldPosition(opos);
 
   log.distance = opos.distanceTo(cp) / o.radius;
   log.distanceUniers = opos.distanceTo(universpos) / o.radius;

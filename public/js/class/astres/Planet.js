@@ -32,11 +32,8 @@ class Planet extends Astre {
     // make a sphere and put it in threeObj
     const geometry = new THREE.SphereGeometry(radius, 25, 25);
     const material = new THREE.MeshPhongMaterial({ color });
-    this.threeObj = new THREE.Mesh(geometry, material);
+    const sphere = new THREE.Mesh(geometry, material);
 
-
-    this.groupThree.add(this.threeObj);
-
-    this.childsIds.push(this.threeObj.uuid);
+    this.add(sphere);
   }
 }
