@@ -28,6 +28,17 @@ const init = () => {
 
   scene.updateMatrixWorld();
 
+  scene.background = new THREE.CubeTextureLoader()
+	.setPath( 'textures/skybox/' )
+	.load( [
+		'right.png',
+		'left.png',
+		'top.png',
+		'bottom.png',
+		'front.png',
+		'back.png'
+	] );
+
   // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
   camera = new Camera({
     camera:

@@ -103,3 +103,4 @@ const angletruk = (dist, diametre) => Math.acos(dist / Math.sqrt(dist**2 + (diam
 // 47bxlksdlxy0 rouge petite nebula
 // kmnr3cn7e1s juste des etoiles
 // 5uszihoblr80 bleu et rouge
+// 70fdn9q7ka80 multicolore
