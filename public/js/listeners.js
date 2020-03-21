@@ -46,7 +46,6 @@ onmouseup = (e) => {
   if (camera && camera.onContextMenu) camera.onMouseUp(e);
 };
 onmousewheel = (e) => {
-  e.preventDefault();
   e.stopPropagation();
 
   if (e.deltaY > 0) mouseWheelSpeed -= mouseWheelSpeed / 2;
