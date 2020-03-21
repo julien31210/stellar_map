@@ -87,17 +87,17 @@ class Astre extends THREE.Object3D {
     return v.distanceTo(v2);
   }
 
-  manageVisibility(camera) {
+  manageVisibility(camera, force) {
     const d = this.getDistanceTo(camera);
 
     if (this.manageLight && this.threeObjInited) this.manageLight(d);
 
-    if (d > 6000 * this.radius && this.on && this.threeObjInited) {
+    if (d > 6000 * this.radius && this.on && this.threeObjInited && !force) {
       this.on = false;
       scene.remove(this);
     }
 
-    if (d < 6000 * this.radius && !this.on) {
+    if ((d < 6000 * this.radius && !this.on) || force) {
 
       if (!this.threeObjInited) {
 
@@ -105,8 +105,8 @@ class Astre extends THREE.Object3D {
         this.threeObjInited = true;
 
         setTimeout(() => {
-          if (this.getDistanceTo(camera) > 6000 * this.radius) {
-            console.log(`wrongInitThreeobj on ${this.type || this.constructor.name}${this.uuid.slice(0, 4)}`);
+          if (this.getDistanceTo(camera) > 6000 * this.radius && !force) {
+            console.log(`wrongInitThreeobj on ${this.constructor.name || this.type}${this.uuid.slice(0, 4)}`);
           }
         }, 100);
       }
@@ -216,7 +216,6 @@ class Astre extends THREE.Object3D {
 
   initIcon() {
     if (this.iconInited) return;
-    console.log('astre initIcon', this.uuid.slice(0, 4), this.iconInited);
     this.iconInited = true;
     if (!(icons[this.constructor && this.constructor.name] && icons[this.constructor && this.constructor.name](this))) return false;
 

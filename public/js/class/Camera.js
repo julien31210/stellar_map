@@ -30,17 +30,17 @@ class Camera extends THREE.PerspectiveCamera {
 
     this.teleportIndex = 0;
 
-    this.easyFindHud = [];
+    this.astralIconsHud = [];
   }
 
-  teleportTo(obj) {
+  teleportTo(obj, inside) {
 
     this.clipTo(obj); // add this to object
 
-    this.position.set(0, 0, obj.radius * 7);
+    this.position.set(0, 0, inside ? obj.radius - (obj.radius/100) : obj.radius * 7);
     this.lookAt(obj.position);
 
-    mouseWheelSpeed = obj.radius * 5;
+    mouseWheelSpeed = inside ? obj.radius/2 : obj.radius * 5;
 
   }
 
@@ -55,7 +55,7 @@ class Camera extends THREE.PerspectiveCamera {
     obj.add(this);
 
     // Add system we cliped to the hud
-    this.updateEasyfind(obj);
+    this.updateAstralIcons(obj);
   }
 
   unClip() {
@@ -76,11 +76,11 @@ class Camera extends THREE.PerspectiveCamera {
       if (!this.autoSpeedToggled) this.translateZ(-mouseWheelSpeed * delta);
       else this.translateZ(-this.autoSpeed * delta);
     }
-    if (k === current_controls.back) this.translateZ(mouseWheelSpeed * delta);
-    if (k === current_controls.right) this.translateX(mouseWheelSpeed * delta);
-    if (k === current_controls.left) this.translateX(-mouseWheelSpeed * delta);
-    if (k === current_controls.up) this.translateY(mouseWheelSpeed * delta);
-    if (k === current_controls.down) this.translateY(-mouseWheelSpeed * delta);
+    if (k === current_controls.back && !this.autoSpeedToggled) this.translateZ(mouseWheelSpeed * delta);
+    if (k === current_controls.right && !this.autoSpeedToggled) this.translateX((mouseWheelSpeed / 2) * delta);
+    if (k === current_controls.left && !this.autoSpeedToggled) this.translateX((-mouseWheelSpeed / 2) * delta);
+    if (k === current_controls.up && !this.autoSpeedToggled) this.translateY((mouseWheelSpeed / 2) * delta);
+    if (k === current_controls.down && !this.autoSpeedToggled) this.translateY((-mouseWheelSpeed / 2) * delta);
 
     if (k === current_controls.roll.left) this.rotateZ((Math.PI / this.mouseSen / 7) * delta);
     if (k === current_controls.roll.right) this.rotateZ(-(Math.PI / this.mouseSen / 7) * delta);
@@ -91,7 +91,7 @@ class Camera extends THREE.PerspectiveCamera {
     if (k == current_controls.camera.speedUp) mouseWheelSpeed += mouseWheelSpeed / 2;
     if (k == current_controls.camera.slowDown) mouseWheelSpeed -= mouseWheelSpeed / 2;
     if (k == current_controls.camera.toggleAutoSpeed) this.autoSpeedToggled = !this.autoSpeedToggled;
-    if (k === 8) this.resetEasyfind();
+    if (k === 8) this.resetAstralIcons();
     if (k == 13) {
       if (!this.isLocked) {
         document.getElementById('blocker').requestPointerLock(); // lock the mouse
@@ -207,49 +207,63 @@ class Camera extends THREE.PerspectiveCamera {
     }
   }
 
-  updateEasyfind(astre) {
-    this.resetEasyfind();
+  updateAstralIcons(astre) {
+    this.resetAstralIcons();
 
     if (astre && astre.isAstre) {
 
-      if (!astre.icon) astre.initIcon();
-      if (astre.icon) this.add(astre.icon);
-
-      if (astre.orbit && astre.orbit.parent && astre.orbit.parent.icon && !this.children.find(el => el.uuid === astre.orbit.parent.icon.uuid)) {
-        if (!astre.orbit.parent.icon) astre.orbit.parent.initIcon();
-        this.add(astre.orbit.parent.icon);
+      if (!astre.iconInited) astre.initIcon();
+      if (astre.icon && !this.children.includes(astre.icon)) {
+        this.add(astre.icon);
+        this.astralIconsHud.push(astre.icon);
       }
 
+      // if the icon has an orbital parent
+      if (astre.orbit && astre.orbit.parent) {
+        // if parent icon is not inited
+        if (!astre.orbit.parent.iconInited) astre.orbit.parent.initIcon();
+        // if parent as icon and icon is not already in camera hud
+        if(astre.orbit.parent.icon && !this.children.find(el => el.uuid === astre.orbit.parent.icon.uuid)) {
+          // add it to camera hud and to AstralIcons 
+          this.add(astre.orbit.parent.icon)
+          this.astralIconsHud.push(astre.orbit.parent.icon);
+        };
+      }
+
+      // display all first child's icons of this astre
       astre.childs.forEach((child) => {
-        // If the added astre is not already is the hud
-        if (this.children.includes(child.icon)) return;
-        // We add it
-        if (!astre.icon) child.initIcon();
-        if (child.icon) this.add(child.icon);
+        if (!child.iconInited) child.initIcon();
+        if (child.icon && !this.children.includes(child.icon)) {
+          this.add(child.icon);
+          this.astralIconsHud.push(child.icon);
+        }
       });
     }
   }
 
-  resetEasyfind() {
-    console.log(' -- resetEasyfind --');
+  resetAstralIcons() {
+    // console.log(' -- resetAstralIcons --');
+    // console.log(this.astralIconsHud)
+    const removeIconRecurs = (o) => {
+      // console.log(o.uuid.slice(0, 4), o.isIcon);
+      if (o.isIcon) this.remove(o);
 
-    // const removeIconRecurs = (o) => {
-    //   // console.log(o.uuid.slice(0, 4), o.isIcon);
-    //   if (o.isIcon) this.remove(o);
+      if (o.children.length > 0) {
+        o.children.forEach((children) => {
+          removeIconRecurs(children);
+        });
+      }
+    };
 
-    //   if (o.children.length > 0) {
-    //     o.children.forEach((children) => {
-    //       removeIconRecurs(children);
-    //     });
-    //   }
-    // };
-
-    this.children.forEach((children) => {
-      console.log(children.astre && children.astre.constructor.name, children.uuid.slice(0, 4));
-      // if (children.isIcon) children.changeColor(0x00f9ff);
-      if (children.isIcon) this.remove(children);
-      // removeIconRecurs(children);
+    this.astralIconsHud.forEach((icon) => {
+      // if (icon.isIcon) icon.changeColor(0x00f9ff);
+      // console.log(icon, icon.constructor.name)
+      if (icon.isIcon) {
+        // console.log(icon.astre.constructor.name, icon.uuid.slice(0, 4));
+        removeIconRecurs(icon);
+      }
     });
+    this.astralIconsHud = []
   }
 
   animate(delta) {
@@ -273,17 +287,17 @@ class Camera extends THREE.PerspectiveCamera {
     const cp = new THREE.Vector3();
     this.getWorldPosition(cp);
 
-    const dir = new THREE.Vector3(); // create once an reuse it
+    const dir = new THREE.Vector3();
     dir.subVectors(v, cp).normalize();
 
     crossAirRaycaster.set(cp, dir);
 
     const crossAirIntersect = crossAirRaycaster.intersectObjects(scene.children, true);
 
-    const aimedAstres = crossAirIntersect.reduce((acc, el) => {
-      if (el.object.isAstre) acc.push(el.object);
-      else if (el.object.parent && el.object.parent.isAstre) acc.push(el.object.parent);
-      else if (el.object.parent && el.object.parent.parent && el.object.parent.parent.isAstre) acc.push(el.object.parent);
+    const aimedAstres = crossAirIntersect.reduce((acc, aim) => {
+      if (aim.object.isAstre) acc.push(aim.object);
+      else if (aim.object.parent && aim.object.parent.isAstre) acc.push(aim.object.parent);
+      else if (aim.object.parent && aim.object.parent.parent && aim.object.parent.parent.isAstre) acc.push(aim.object.parent);
       return acc;
     }, []);
 
@@ -317,22 +331,29 @@ class Camera extends THREE.PerspectiveCamera {
       this.autoSpeedToggled = false;
     }
 
-    // "Le Saut Quantique"'S HELPER
-    const aimedIcons = crossAirIntersect.reduce((acc, el) => {
-      // console.log(el.object.isIcon)
-      if (el.object.isIcon) acc.push(el.object);
-      else if (el.object.parent && el.object.parent.isIcon) acc.push(el.object.parent);
-      else if (el.object.parent && el.object.parent.parent && el.object.parent.parent.isIcon) acc.push(el.object.parent.parent);
+    // "Le Saut Quantique"'S AIM HELPER
+    const aimedIcons = crossAirIntersect.reduce((acc, aim) => {
+      const alreadyIn = (o) => acc.find((e) => e.uuid === o.uuid);
 
+      if (aim.object.isIcon && !alreadyIn(aim.object)) acc.push(aim.object)
+      else if (aim.object.parent && aim.object.parent.isIcon && !alreadyIn(aim.object.parent)) acc.push(aim.object.parent);
+      else if (aim.object.parent && aim.object.parent.parent && aim.object.parent.parent.isIcon && !alreadyIn(aim.object.parent.parent)) {
+        acc.push(aim.object.parent.parent);
+      }
+ 
       return acc;
     }, []);
 
-    const aimedIcon = aimedIcons[0];
+    aimedIcons.sort((a, b)=> a.astre.getDistanceTo(this) - b.astre.getDistanceTo(this));
+    // take the closest astre
+    const aimedIcon = aimedIcons[0] && aimedIcons[0];
     if (
       // !aimed &&
       aimedIcon
       && aimedIcon.astre
       && aimedIcon.astre.uuid !== this.clipedTo.uuid
+      && this.previousAimedIconId
+      && this.previousAimedIconId === aimedIcon.uuid
     ) {
       // console.log(aimedIcon.astre.uuid, this.clipedTo.uuid);
       const iconAstrePos = new THREE.Vector3();
@@ -342,9 +363,12 @@ class Camera extends THREE.PerspectiveCamera {
       const q1 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), iconAstrePos.normalize());
       // get the rotation needed to look (perfectly) in the astre direction
 
-      this.crossAirRotationCenter.quaternion.slerp(q1, 0.1);
+      aimedIcon.astre.manageVisibility(this, true);
+      this.crossAirRotationCenter.quaternion.slerp(q1, 0.5);
     }
+    this.previousAimedIconId = aimedIcon && aimedIcon.uuid
 
+    // FLEXIBLE CROSS AIR
     if (this.isLocked) {
       // Calculate how mutch strenght we want in flexibillity between crossair and camera
       let strenght = 7.5 * delta;
@@ -366,19 +390,18 @@ class Camera extends THREE.PerspectiveCamera {
     this.menuMouseOvers = this.cameraRaycaster.intersectObjects(sceneHUD.children, true);
 
     // HUD
-    // DISPLAY SYS (addToEasyfind) rendering
-    this.easyFindHud.forEach((el) => {
+    // DISPLAY SYS (addToAstralIcons) rendering
+    this.astralIconsHud.forEach((icon) => {
 
-      if (!el.icon) return;
-
+      if (!icon.isIcon) return;
       // Get astre's world position
       const astredPos = new THREE.Vector3();
-      el.astre.groupThree.getWorldPosition(astredPos);
+      icon.astre.getWorldPosition(astredPos);
       // transform position to camera local
       this.worldToLocal(astredPos);
       // set the vector's length
       astredPos.setLength(60);
-      el.icon.position.set(astredPos.x, astredPos.y, astredPos.z);
+      icon.position.set(astredPos.x, astredPos.y, astredPos.z);
     });
 
   }

@@ -160,6 +160,6 @@ init();
 
   animate();
   setTimeout(() => {
-    camera.teleportTo(univers);
+    camera.teleportTo(univers, true);
   }, 250);
 })();
