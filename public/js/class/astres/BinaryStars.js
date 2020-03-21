@@ -79,7 +79,6 @@ class BinaryStars extends Astre {
   }
 
   initThreeObj() {
-
     const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
     const material = new THREE.MeshBasicMaterial();
     const sphere = new THREE.Mesh(geometry, material);

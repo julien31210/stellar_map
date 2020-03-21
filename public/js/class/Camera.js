@@ -30,6 +30,7 @@ class Camera extends THREE.PerspectiveCamera {
 
     this.teleportIndex = 0;
 
+    this.easyFindHud = [];
   }
 
   teleportTo(obj) {
@@ -363,6 +364,22 @@ class Camera extends THREE.PerspectiveCamera {
     this.cameraRaycaster.setFromCamera(this.mouse, this);
     this.mouseOvers = this.cameraRaycaster.intersectObjects(scene.children, true);
     this.menuMouseOvers = this.cameraRaycaster.intersectObjects(sceneHUD.children, true);
+
+    // HUD
+    // DISPLAY SYS (addToEasyfind) rendering
+    this.easyFindHud.forEach((el) => {
+
+      if (!el.icon) return;
+
+      // Get astre's world position
+      const astredPos = new THREE.Vector3();
+      el.astre.groupThree.getWorldPosition(astredPos);
+      // transform position to camera local
+      this.worldToLocal(astredPos);
+      // set the vector's length
+      astredPos.setLength(60);
+      el.icon.position.set(astredPos.x, astredPos.y, astredPos.z);
+    });
 
   }
 

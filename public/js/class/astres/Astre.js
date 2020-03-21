@@ -5,7 +5,6 @@ class Astre extends THREE.Object3D {
 
     this.isAstre = true;
 
-    this.uuid = this.uuid;
     this.lifeTime = 0;
     this.realLifeTime = 0;
     this.iconInited = false;
