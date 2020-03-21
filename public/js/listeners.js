@@ -1,6 +1,6 @@
 
 
-const current_controls = controls.azerty;
+const current_controls = controls.qwerty;
 
 let mouseWheelSpeed = 30000; // camera movement speed in km/s
 let autoSpeedToggled = false;
@@ -19,7 +19,10 @@ onkeydown = onkeyup = (e) => {
   if (!noPreventDefaultKeys.includes(k)) e.preventDefault();
 
   if (e.type === 'keydown') {
-    if (k == current_controls.logger) console.log(logger);
+    if (k == current_controls.logger) {
+      console.log(logger);
+      // camera.position.set(48.067946010607045, 12.30372915761398, 78.53294978589706);
+    }
     if (k == current_controls.timeSpeed.slowDown && timeSpeedMultiplicator > -5000000) timeSpeedMultiplicator -= Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
     if (k == current_controls.timeSpeed.speedUp && timeSpeedMultiplicator < 5000000) timeSpeedMultiplicator += Math.floor(Math.abs(timeSpeedMultiplicator) / 2) + .2;
 

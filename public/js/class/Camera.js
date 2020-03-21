@@ -31,7 +31,6 @@ class Camera extends THREE.PerspectiveCamera {
     this.teleportIndex = 0;
 
     this.easyFindHud = [];
-    this.easyFindIconSize = .5;
   }
 
   teleportTo(obj) {
@@ -39,7 +38,7 @@ class Camera extends THREE.PerspectiveCamera {
     this.clipTo(obj); // add this to object
 
     this.position.set(0, 0, obj.radius * 7);
-    this.lookAt(obj.groupThree.position);
+    this.lookAt(obj.position);
 
     mouseWheelSpeed = obj.radius * 5;
 
@@ -52,8 +51,8 @@ class Camera extends THREE.PerspectiveCamera {
     this.clipedTo = obj;
 
     this.matrix.copy(this.matrixWorld);
-    this.applyMatrix(new THREE.Matrix4().getInverse(obj.groupThree.matrixWorld));
-    obj.groupThree.add(this);
+    this.applyMatrix(new THREE.Matrix4().getInverse(obj.matrixWorld));
+    obj.add(this);
 
     // Add system we cliped to the hud
     this.updateEasyfind(obj);
@@ -61,8 +60,8 @@ class Camera extends THREE.PerspectiveCamera {
 
   unClip() {
     if (this.clipedTo) {
-      this.applyMatrix(this.clipedTo.groupThree.matrixWorld);
-      this.clipedTo.groupThree.remove(this);
+      this.applyMatrix(this.clipedTo.matrixWorld);
+      this.clipedTo.remove(this);
       scene.add(this);
 
       // Clip to the orbital parent of the object we unclip
@@ -116,8 +115,9 @@ class Camera extends THREE.PerspectiveCamera {
       if (
         !this.isLocked
         && this.mouseOvers.length
-        && getAstreByUuid(this.mouseOvers[0].object.uuid)
-      ) console.log(getAstreByUuid(this.mouseOvers[0].object.uuid));
+        && this.mouseOvers[0].object
+        && this.mouseOvers[0].object.parent
+      ) console.log(this.mouseOvers[0].object.parent);
     }
   }
 
@@ -126,8 +126,10 @@ class Camera extends THREE.PerspectiveCamera {
     if (
       !this.isLocked
       && this.mouseOvers.length
-      && getAstreByUuid(this.mouseOvers[0].object.uuid)
-    ) openWindow(getAstreByUuid(this.mouseOvers[0].object.uuid));
+      && this.mouseOvers[0].object
+      && this.mouseOvers[0].object.parent
+      && this.mouseOvers[0].object.parent.isAstre
+    ) openWindow(this.mouseOvers[0].object.parent);
 
     if (this.menuMouseOvers[0]) {
       console.log(this.menuMouseOvers[0].object);
@@ -210,162 +212,44 @@ class Camera extends THREE.PerspectiveCamera {
 
     if (astre && astre.isAstre) {
 
+      if (!astre.icon) astre.initIcon();
+      if (astre.icon) this.add(astre.icon);
 
-      const newCircle = (radius, quality) => {
-        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-        const geometry = new THREE.Geometry();
-        const r = radius || .25;
-        const circleQuality = quality || 4;
-        const tilt = Math.PI * .25; // 45 deg
-
-        for (let i = 0; i <= circleQuality; i += 1) {
-          const radPos = i * (Math.PI * 2 / circleQuality) + tilt;
-          const x = r * Math.sin(radPos);
-          const y = r * Math.cos(radPos);
-
-          geometry.vertices.push(new THREE.Vector3(x, y, 0));
-        }
-        return new THREE.Line(geometry, material);
-      };
-
-      const newPoint = () => {
-        const geo = new THREE.Geometry();
-        const mat = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-        geo.vertices.push(new THREE.Vector3(0, 0, 0));
-        return new THREE.Points(geo, mat);
-      };
-
-      const icons = {
-        Planet: () => newCircle(this.easyFindIconSize, 6),
-        System: false, // no icons for systems
-        BinaryStars: (binaryStars) => {
-          const iconSize = this.easyFindIconSize * 1.5;
-          const totalIconDistance = iconSize + .1;
-          const totalVertices = 12;
-          // Get real stars radius
-          const realR1 = binaryStars.star1.radius;
-          const realR2 = binaryStars.star2.radius;
-          // Get real stars orbits distances
-          const realDist1 = binaryStars.star1.orbit.distance;
-          const realDist2 = binaryStars.star2.orbit.distance;
-          // Totals
-          const totalRealRadius = realR1 + realR2;
-          const totalRealDistance = realDist1 + realDist2;
-
-          // Icon stars radius
-          const iconR1 = realR1 * iconSize / totalRealRadius;
-          const iconR2 = realR2 * iconSize / totalRealRadius;
-
-          // Icon stars distances from the middle of the icon
-          const iconDist1 = realDist2 * totalIconDistance / totalRealDistance;
-          const iconDist2 = realDist1 * totalIconDistance / totalRealDistance;
-
-          // Icon stars distances from the middle of the icon (+ 2 to avoid to be at less than 3)
-          const verticesNumber1 = Math.ceil(totalVertices * iconR1) + 2;
-          const verticesNumber2 = Math.ceil(totalVertices * iconR2) + 2;
-
-          const star1 = newCircle(iconR1, verticesNumber1);
-          const star2 = newCircle(iconR2, verticesNumber2);
-
-          star1.position.set(-iconDist1, 0, 0);
-          star2.position.set(iconDist2, 0, 0);
-
-          const bs = new THREE.Object3D();
-
-          bs.add(star1, star2);
-
-          return bs;
-        }, // TO DO: use binary stars infos
-        Galaxy: (galaxy) => {
-          const iconSize = this.easyFindIconSize * 4;
-          const { branchesNumber } = galaxy;
-          // create icon taking into account its number of branches
-          const sysNumberPerBranche = 10;
-
-          const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-          const geometry = new THREE.Geometry();
-
-          const lines = [];
-          for (let j = 0; j < branchesNumber; j += 1) {
-            const lineGeometry = new THREE.Geometry();
-
-            for (let i = 0; i <= sysNumberPerBranche - 1; i += 1) {
-              // Define radial position of the vertice
-              const radPos = ((Math.PI * 2) / sysNumberPerBranche / branchesNumber)
-                * (sysNumberPerBranche - i)
-                + (Math.PI * 2 / branchesNumber)
-                * j;
-
-              const r = (iconSize / sysNumberPerBranche) * i // Define distance between sys
-                + iconSize / 10; // Define distance between galactic center and sys
-
-              // Position the vertices of the lines
-              const linex = r * Math.sin(radPos);
-              const liney = r * Math.cos(radPos);
-              // Position the points with radial offset
-              const pointx = r * Math.sin(radPos + Math.PI / branchesNumber / 5);
-              const pointy = r * Math.cos(radPos + Math.PI / branchesNumber / 5);
-
-              // Push the vertices
-              geometry.vertices.push(new THREE.Vector3(pointx, pointy, 0));
-              lineGeometry.vertices.push(new THREE.Vector3(linex, liney, 0));
-            }
-            lines.push(new THREE.Line(lineGeometry, material));
-          }
-          const points = new THREE.Points(geometry, material);
-
-          const g = new THREE.Object3D();
-
-          g.add(
-            points,
-            ...lines
-          );
-
-          // g.children[0].material.color.set(0x00f9ff); // To set color
-          return g;
-        },
-        Star: () => newCircle(this.easyFindIconSize * 1.2, 8)
-      };
-
-      const findIcon = (a) => {
-        if (!icons[a.constructor && a.constructor.name]) return false;
-        const icontype = icons[a.constructor && a.constructor.name];
-
-        return icontype(a);
-      };
-
-
-      // If the added astre is not already is the hud
-      if (!this.easyFindHud.find(el => el.astre.uuid === astre.uuid)) {
-        // We add it
-        const icon = findIcon(astre);
-        this.easyFindHud.push({ icon, astre });
-        if (icon) this.add(icon);
-      }
-      if (astre.orbit && astre.orbit.parent && !this.easyFindHud.find(el => el.astre.uuid === astre.orbit.parent.uuid)) {
-        // We add it
-        const icon = findIcon(astre.orbit.parent);
-        this.easyFindHud.push({ icon, astre: astre.orbit.parent });
-        if (icon) this.add(icon);
+      if (astre.orbit && astre.orbit.parent && astre.orbit.parent.icon && !this.children.find(el => el.uuid === astre.orbit.parent.icon.uuid)) {
+        if (!astre.orbit.parent.icon) astre.orbit.parent.initIcon();
+        this.add(astre.orbit.parent.icon);
       }
 
-      astre.childs.forEach((entity) => {
+      astre.childs.forEach((child) => {
         // If the added astre is not already is the hud
-        if (this.easyFindHud.find(el => el.astre.uuid === entity.uuid)) return;
+        if (this.children.includes(child.icon)) return;
         // We add it
-        const childIcon = findIcon(entity);
-        this.easyFindHud.push({ icon: childIcon, astre: entity });
-
-        if (childIcon) this.add(childIcon);
-
+        if (!astre.icon) child.initIcon();
+        if (child.icon) this.add(child.icon);
       });
-
     }
   }
 
   resetEasyfind() {
-    this.easyFindHud.forEach((e) => { this.remove(e.icon); });
-    this.easyFindHud = [];
+    console.log(' -- resetEasyfind --');
+
+    // const removeIconRecurs = (o) => {
+    //   // console.log(o.uuid.slice(0, 4), o.isIcon);
+    //   if (o.isIcon) this.remove(o);
+
+    //   if (o.children.length > 0) {
+    //     o.children.forEach((children) => {
+    //       removeIconRecurs(children);
+    //     });
+    //   }
+    // };
+
+    this.children.forEach((children) => {
+      console.log(children.astre && children.astre.constructor.name, children.uuid.slice(0, 4));
+      // if (children.isIcon) children.changeColor(0x00f9ff);
+      if (children.isIcon) this.remove(children);
+      // removeIconRecurs(children);
+    });
   }
 
   animate(delta) {
@@ -373,24 +257,10 @@ class Camera extends THREE.PerspectiveCamera {
     const cliped = this.clipedTo;
     if (cliped && cliped.radius * 10 < cliped.getDistanceTo(this)) this.unClip();
 
-    if (this.isLocked) {
-
-      // Get world quaternion of the crossAir
-      const crossAirWorldQ = new THREE.Quaternion();
-      this.crossAirRotationCenter.getWorldQuaternion(crossAirWorldQ);
-      crossAirWorldQ.normalize();
-
-      // Calculate how mutch strenght we want in flexibillity between crossair and camera
-      let strenght = 7.5 * delta;
-      strenght = strenght >= 1 ? 1 : strenght;
-
-      // Bring camera quaternion in direction of the world quaternion of the crossAir
-      this.quaternion.slerp(crossAirWorldQ, strenght);
-
-      // Bring quaternion of the crossAir in direction of the center of the screen (0, 0, 0)
-      const center = new THREE.Quaternion(0, 0, 0, 1);
-      this.crossAirRotationCenter.quaternion.slerp(center, strenght);
-    }
+    // Get world quaternion of the crossAir
+    const crossAirWorldQ = new THREE.Quaternion();
+    this.crossAirRotationCenter.getWorldQuaternion(crossAirWorldQ);
+    crossAirWorldQ.normalize();
 
     // RAYCASTERS
     // CROSS AIR RAYCASTER
@@ -410,21 +280,17 @@ class Camera extends THREE.PerspectiveCamera {
 
     const crossAirIntersect = crossAirRaycaster.intersectObjects(scene.children, true);
 
-    const aimedAstre = crossAirIntersect.length > 0
-      ? crossAirIntersect
-        .reverse()
-        .reduce((r, el) => {
-          const astre = getAstreByUuid(el.object && el.object.uuid);
-          if (astre) return astre;
-          return r;
-        }, undefined)
-      : undefined;
+    const aimedAstres = crossAirIntersect.reduce((acc, el) => {
+      if (el.object.isAstre) acc.push(el.object);
+      else if (el.object.parent && el.object.parent.isAstre) acc.push(el.object.parent);
+      else if (el.object.parent && el.object.parent.parent && el.object.parent.parent.isAstre) acc.push(el.object.parent);
+      return acc;
+    }, []);
 
-    if (aimedAstre) {
-
-      const d = aimedAstre.getDistanceTo(this);
-      const { radius } = aimedAstre;
-
+    const aimed = aimedAstres[0];
+    if (aimed) {
+      const d = aimed.getDistanceTo(this);
+      const { radius } = aimed;
       // '"Le Saut Quantique", omelette du fromage'
       if (this.autoSpeedToggled) {
         this.crossAirMaterial.color.set(0x0000ff);
@@ -432,21 +298,67 @@ class Camera extends THREE.PerspectiveCamera {
         this.autoSpeed = newSpeed;
       } else this.crossAirMaterial.color.set(0x00ff00);
 
-      if (d < mouseWheelSpeed / 2 && !this.autoSpeedToggled) {
-        mouseWheelSpeed = (d + radius) / 1.7;
-      }
-      if (d < radius * 10) this.clipTo(aimedAstre);
+      if (d > radius) {
+        if (d < mouseWheelSpeed / 2 && !this.autoSpeedToggled) {
+          mouseWheelSpeed = (d + radius) / 1.7;
+        }
 
-      if (d < radius * 7) {
-        mouseWheelSpeed = (d + radius) / 1.5;
-        this.autoSpeed = mouseWheelSpeed;
-        this.autoSpeedToggled = false;
+        if (d < radius * 7 && d > radius) {
+          mouseWheelSpeed = (d + radius) / 1.5;
+          this.autoSpeed = mouseWheelSpeed;
+          this.autoSpeedToggled = false;
+        }
       }
+
+      if (d < radius * 10) this.clipTo(aimed);
 
     } else {
       this.crossAirMaterial.color.set(0xffffff);
       this.autoSpeedToggled = false;
     }
+
+    // "Le Saut Quantique"'S HELPER
+    const aimedIcons = crossAirIntersect.reduce((acc, el) => {
+      // console.log(el.object.isIcon)
+      if (el.object.isIcon) acc.push(el.object);
+      else if (el.object.parent && el.object.parent.isIcon) acc.push(el.object.parent);
+      else if (el.object.parent && el.object.parent.parent && el.object.parent.parent.isIcon) acc.push(el.object.parent.parent);
+
+      return acc;
+    }, []);
+
+    const aimedIcon = aimedIcons[0];
+    if (
+      // !aimed &&
+      aimedIcon
+      && aimedIcon.astre
+      && aimedIcon.astre.uuid !== this.clipedTo.uuid
+    ) {
+      // console.log(aimedIcon.astre.uuid, this.clipedTo.uuid);
+      const iconAstrePos = new THREE.Vector3();
+      aimedIcon.astre.getWorldPosition(iconAstrePos); // get position of the aimed astre
+      this.worldToLocal(iconAstrePos); // transform position of the aimed astre to local (local to camera)
+
+      const q1 = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), iconAstrePos.normalize());
+      // get the rotation needed to look (perfectly) in the astre direction
+
+      this.crossAirRotationCenter.quaternion.slerp(q1, 0.1);
+    }
+
+    if (this.isLocked) {
+      // Calculate how mutch strenght we want in flexibillity between crossair and camera
+      let strenght = 7.5 * delta;
+      strenght = strenght >= 1 ? 1 : strenght;
+
+      // Bring quaternion of the crossAir in direction of the center of the screen (0, 0, 0)
+      const center = new THREE.Quaternion(0, 0, 0, 1);
+      this.crossAirRotationCenter.quaternion.slerp(center, strenght);
+
+      // Bring camera quaternion in direction of the world quaternion of the crossAir
+      this.quaternion.slerp(crossAirWorldQ, strenght);
+    }
+
+    // this.crossAirRotationCenter.quaternion.slerp()
 
     // MOUSE RAY
     this.cameraRaycaster.setFromCamera(this.mouse, this);
@@ -454,7 +366,7 @@ class Camera extends THREE.PerspectiveCamera {
     this.menuMouseOvers = this.cameraRaycaster.intersectObjects(sceneHUD.children, true);
 
     // HUD
-    // DISPLAY SYS (updateEasyfind) rendering
+    // DISPLAY SYS (addToEasyfind) rendering
     this.easyFindHud.forEach((el) => {
 
       if (!el.icon) return;
