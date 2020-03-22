@@ -1,13 +1,13 @@
 
-class Astre {
+class Astre extends THREE.Object3D {
   constructor(args) {
+    super();
 
     this.isAstre = true;
 
-    this.groupThree = new THREE.Group();
-    this.uuid = this.groupThree.uuid;
     this.lifeTime = 0;
     this.realLifeTime = 0;
+    this.iconInited = false;
 
     Object.keys(args)
       .forEach((key) => {
@@ -27,18 +27,17 @@ class Astre {
     this.delayedDelta = 0;
     this.childsIds = [];
 
-    this.position = {
-      x: (this.position && this.position.x) || 0,
-      y: (this.position && this.position.y) || 0,
-      z: (this.position && this.position.z) || 0
-    };
+    this.position.set(
+      (this.p && this.p.x) || 0,
+      (this.p && this.p.y) || 0,
+      (this.p && this.p.z) || 0
+    );
 
     if (this.orbit && this.orbit.parent) this.orbitAround();
 
-    scene.add(this.groupThree);
+    scene.add(this);
 
     cameraIndex.push(this);
-
 
   }
 
@@ -75,33 +74,30 @@ class Astre {
     });
 
 
+    if (this.icon) this.icon.animate(delta);
   }
 
   getDistanceTo(obj) {
     const v = new THREE.Vector3();
     obj.getWorldPosition(v);
 
-    return v.distanceTo(this.getWorldPosition());
+    const v2 = new THREE.Vector3();
+    this.getWorldPosition(v2);
+
+    return v.distanceTo(v2);
   }
 
-  getWorldPosition() {
-    const objVect = new THREE.Vector3();
-    this.groupThree.getWorldPosition(objVect);
-
-    return objVect;
-  }
-
-  manageVisibility(camera) {
+  manageVisibility(camera, force) {
     const d = this.getDistanceTo(camera);
 
     if (this.manageLight && this.threeObjInited) this.manageLight(d);
 
-    if (d > 6000 * this.radius && this.on && this.threeObjInited) {
+    if (d > 6000 * this.radius && this.on && this.threeObjInited && !force) {
       this.on = false;
-      scene.remove(this.groupThree);
+      scene.remove(this);
     }
 
-    if (d < 6000 * this.radius && !this.on) {
+    if ((d < 6000 * this.radius && !this.on) || force) {
 
       if (!this.threeObjInited) {
 
@@ -109,14 +105,14 @@ class Astre {
         this.threeObjInited = true;
 
         setTimeout(() => {
-          if (this.getDistanceTo(camera) > 6000 * this.radius) {
-            console.log(`wrongInitThreeobj on ${this.type || this.constructor.name}${this.uuid.slice(0, 4)}`);
+          if (this.getDistanceTo(camera) > 6000 * this.radius && !force) {
+            console.log(`wrongInitThreeobj on ${this.constructor.name || this.type}${this.uuid.slice(0, 4)}`);
           }
         }, 100);
       }
       this.on = true;
 
-      scene.add(this.groupThree);
+      scene.add(this);
     }
 
   }
@@ -125,7 +121,8 @@ class Astre {
     if (this.orbit && this.orbit.parent) {
       const { medianRadiantSpeed, radialPosition, orbit: { parent, distance: d, eccentricity: ecc, tilt } } = this;
 
-      const parentPos = parent.getWorldPosition();
+      const parentPos = new THREE.Vector3();
+      parent.getWorldPosition(parentPos);
 
       const { PI } = Math;
 
@@ -145,29 +142,29 @@ class Astre {
         const cosrad = cos(radialPosition);
         const sinrad = sin(radialPosition);
 
-        this.position.x = parentPos.x
+        this.position.set(
+          // x
+          parentPos.x
           + d * (ecc || 0)
-          + cosrad * (d + d * abs(ecc || 0));
-
-        this.position.z = parentPos.z
-          + sinrad * d * cos(tilt);
-
-        this.position.y = parentPos.y
-          + sinrad * d * sin(tilt);
+          + cosrad * (d + d * abs(ecc || 0)),
+          // y
+          parentPos.y
+          + sinrad * d * sin(tilt),
+          // z
+          parentPos.z
+          + sinrad * d * cos(tilt)
+        );
 
       } else {
-        this.position.x = parentPos.x;
-        this.position.y = parentPos.y;
-        this.position.z = parentPos.z;
+        this.position.set(
+          parentPos.x,
+          parentPos.y,
+          parentPos.z
+        );
       }
 
     }
-
-    this.groupThree.position.x = this.position.x;
-    this.groupThree.position.y = this.position.y;
-    this.groupThree.position.z = this.position.z;
   }
-
 
   orbitAround(stellarParent, center) {
     const { sqrt, PI } = Math;
@@ -215,6 +212,16 @@ class Astre {
 
   setRadialPosition(rad) {
     this.radialPosition = rad;
+  }
 
+  initIcon() {
+    if (this.iconInited) return;
+    this.iconInited = true;
+    if (!(icons[this.constructor && this.constructor.name] && icons[this.constructor && this.constructor.name](this))) return false;
+
+    this.icon = new Icon({
+      astre: this,
+      camera
+    });
   }
 }

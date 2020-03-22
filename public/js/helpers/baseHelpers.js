@@ -89,3 +89,18 @@ const rand = {
   },
   radiant: () => (random() * 2 - 1) * PI
 };
+
+const angletruk = (dist, diametre) => Math.acos(dist / Math.sqrt(dist**2 + (diametre / 2)**2)) * (180 / Math.PI);
+// console.log('soleil', angletruk(149597870, 1392700));
+// console.log('piece2eur 277cm', angletruk(277, 2.575));
+// console.log('piece2eur a 220-158', angletruk(220-158, 2.575));
+// console.log('eau chaude a 220', angletruk(220, 8.5));
+// console.log('piece5cents 1.70m', angletruk(170, 1.625));
+// console.log('bille airsoft 6mm a 70cm', angletruk(70, .625));
+
+// 6jkq4ze4y0g0 rose jaune a peine vert
+// jvmbb8kak3k full orange
+// 47bxlksdlxy0 rouge petite nebula
+// kmnr3cn7e1s juste des etoiles
+// 5uszihoblr80 bleu et rouge
+// 70fdn9q7ka80 multicolore

@@ -79,16 +79,13 @@ class BinaryStars extends Astre {
   }
 
   initThreeObj() {
-    this.threeObj = this.groupThree;
-
     const geometry = new THREE.SphereGeometry(this.radius, 25, 25);
     const material = new THREE.MeshBasicMaterial();
     const sphere = new THREE.Mesh(geometry, material);
     sphere.material.transparent = true;
     sphere.material.opacity = 0.02;
-    this.childsIds.push(sphere.uuid);
 
-    this.groupThree.add(sphere);
+    this.add(sphere);
 
   }
 
