@@ -12,7 +12,7 @@ class Galaxy extends Astre {
 
       for (let i = 0; i <= brancheSysNumber - 1; i += 1) {
         const sys = new System({
-          name: `solarSys${i + (brancheSysNumber * j)}`,
+          name: `solarSys${i + (brancheSysNumber * j)}-branch${j}`,
           centerType: rObject(starsTypes),
           entities: {
             nb: n(1, 2)
@@ -22,6 +22,7 @@ class Galaxy extends Astre {
             eccentricity: 0,
             distance: convert.to(`${(i / this.density) * 10 + 25 + j}B`) / 1000,
             tilt: n(-90 + (90 / brancheSysNumber) * i, 90 - (90 / brancheSysNumber) * i)
+            // tilt: 0
           }
         });
         sys.setRadialPosition(
@@ -42,6 +43,21 @@ class Galaxy extends Astre {
       return result;
     }, 0);
 
+    const blackHole = new BlackHole({
+      completName: `${this.name}'s BlackHole${i + 1}`,
+      name: `BlackHole${i + 1}`,
+      radius: this.radius / 10000,
+      type: 'BlackHole',
+      orbit: {
+        parent: this,
+        distance: 0,
+        eccentricity: .1,
+        tilt: 0,
+      },
+      mass: (7.36 * (10 ** 22)),
+      textureCubeCenter: this.textureCubeCenter,
+    });
+    this.center = blackHole;
   }
 
   initThreeObj() {
@@ -52,10 +68,6 @@ class Galaxy extends Astre {
     sphere.material.transparent = true;
     sphere.material.opacity = 0.01;
 
-    const geometry2 = new THREE.SphereGeometry(this.radius / 100000, 25, 25);
-    const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const sphere2 = new THREE.Mesh(geometry2, material2);
-
-    this.add(sphere, sphere2);
+    this.add(sphere);
   }
 }

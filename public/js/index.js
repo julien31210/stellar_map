@@ -12,6 +12,17 @@ const logger = {
   time: { s: 0, m: 0, h: 0, j: 0, a: 0 }
 };
 
+const textureCube = new THREE.CubeTextureLoader()
+.setPath( 'textures/skybox/' )
+.load( [
+  'right.png',
+  'left.png',
+  'top.png',
+  'bottom.png',
+  'front.png',
+  'back.png'
+] );
+
 const init = () => {
 
   // on initialise le moteur de rendu
@@ -27,24 +38,14 @@ const init = () => {
   sceneHUD = new THREE.Scene();
 
   scene.updateMatrixWorld();
-
-  scene.background = new THREE.CubeTextureLoader()
-	.setPath( 'textures/skybox/' )
-	.load( [
-		'right.png',
-		'left.png',
-		'top.png',
-		'bottom.png',
-		'front.png',
-		'back.png'
-	] );
+  scene.background = textureCube;
 
   // on initialise la camera avec la class camera qui wrap la camera de three avec quelques fonctionnalitees en plus
   camera = new Camera({
     camera:
     {
       fov: 65,
-      screenRatio: window.innerWidth / window.innerHeight, minDistance: 0.001,
+      screenRatio: window.innerWidth / window.innerHeight, minDistance: .5,
       maxDistance: convert.to('15parsecs') / 1000
     },
     mouse: {
@@ -155,7 +156,8 @@ init();
     branchesNumber: rInt(2, 5),
     spiralStrength: n(1, 3),
     density: n(1.2, 2.2),
-    sysNumber: 150
+    sysNumber: 150,
+    textureCubeCenter: textureCube
   });
 
   animate();
