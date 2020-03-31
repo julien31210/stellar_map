@@ -98,13 +98,25 @@ class Camera extends THREE.PerspectiveCamera {
       } else document.exitPointerLock(); // unlock the mouse
     }
 
-    if (k == current_controls.camera.teleportToNextIndex && parseInt(this.teleportIndex, 10) + 1 <= cameraIndex.length) {
-      this.teleportIndex = parseInt(this.teleportIndex, 10) + 1;
-      if (cameraIndex[this.teleportIndex - 1]) this.teleportTo(cameraIndex[this.teleportIndex - 1]);
+    if (k == current_controls.camera.teleportToNextIndex) {
+      const nextIndex = parseInt(this.teleportIndex, 10) + 1;
+      if(nextIndex <= cameraIndex.length){
+        this.teleportIndex += 1;
+        if(cameraIndex[this.teleportIndex] && cameraIndex[this.teleportIndex].position.x !== 'NaN') this.teleportTo(cameraIndex[this.teleportIndex]);
+      } else if (nextIndex > cameraIndex.length) {
+        this.teleportIndex = 0;
+        if(cameraIndex[this.teleportIndex] && cameraIndex[this.teleportIndex].position.x !== 'NaN') this.teleportTo(cameraIndex[this.teleportIndex]);
+      }
     }
-    if (k == current_controls.camera.teleportToPrevIndex && this.teleportIndex - 1 > 0) {
-      this.teleportIndex = parseInt(this.teleportIndex, 10) - 1;
-      if (cameraIndex[this.teleportIndex - 1]) this.teleportTo(cameraIndex[this.teleportIndex - 1]);
+    if (k == current_controls.camera.teleportToPrevIndex) {
+      const nextIndex = parseInt(this.teleportIndex, 10) - 1;
+      if(nextIndex >= 0){
+        this.teleportIndex -= 1;
+        if(cameraIndex[this.teleportIndex] && cameraIndex[this.teleportIndex].position.x !== 'NaN') this.teleportTo(cameraIndex[this.teleportIndex]);
+      } else if (nextIndex < 0) {
+        this.teleportIndex = cameraIndex.length;
+        if(cameraIndex[this.teleportIndex] && cameraIndex[this.teleportIndex].position.x !== 'NaN') this.teleportTo(cameraIndex[this.teleportIndex]);
+      }
     }
   }
 

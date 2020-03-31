@@ -11,11 +11,8 @@ class Star extends Astre {
     const { radius, color, scope } = this;
     const { star, light } = sunlight({ color, colorlight: 0xffffff, intensity: 1, scope: scope * 2, radius });
 
-    this.threeObj = star;
+    this.add(star);
     this.light = light;
-    this.childsIds.push(this.threeObj.uuid);
-
-    this.add(this.threeObj);
   }
 
   turnLightOn() {
