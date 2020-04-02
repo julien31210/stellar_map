@@ -34,6 +34,13 @@ const strBreakLines = (str) => {
 
 };
 const openWindow = (clickEl) => {
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 500;
+  canvas.height = 500
+
   const { type, name, radius, mass } = clickEl;
   ctx.font = '20px Arial';
   ctx.fillStyle = '#C46210';
@@ -56,5 +63,53 @@ const openWindow = (clickEl) => {
   const plane = new THREE.Mesh(planeGeometry, material);
   plane.position.x = -80;
   plane.position.y = 30;
-  sceneHUD.add(plane);
+  return plane;
+};
+
+const openVarDisplayer = ({ width, height, offsetx = 0, offsety = 0, offsetz = -30, text = '' }) => {
+
+  console.log({ width, height, offsetx, offsety, offsetz, text });
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 500;
+  canvas.height = 500;
+
+  ctx.font = '25px Arial';
+  ctx.fillStyle = '#00ff00';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, width / 2, height / 2);
+
+  const hudTexture = new THREE.Texture(canvas);
+  hudTexture.needsUpdate = true;
+  const material = new THREE.MeshBasicMaterial({ map: hudTexture, transparent: true });
+  const planeGeometry = new THREE.PlaneGeometry(5, 5);
+  const displayer = new THREE.Mesh(planeGeometry, material);
+
+  displayer.position.set(offsetx, offsety, offsetz);
+  return displayer
+};
+
+const updateVarDisplayer = ({ width, height, displayer, text = '' }) => {
+
+  const canvas = displayer.material.map.image
+  const ctx = canvas.getContext('2d');
+  canvas.width = width;
+  canvas.height = height;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.font = '25px Arial';
+  ctx.fillStyle = '#00ff00';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+  const hudTexture = new THREE.Texture(canvas);
+  hudTexture.needsUpdate = true;
+  displayer.material = new THREE.MeshBasicMaterial({ map: hudTexture, transparent: true });
+
+  return displayer
 };

@@ -52,20 +52,55 @@ const dimentionDivider = 1000;
 const convert = {
   radians: degrees => degrees * PI / 180,
   degrees: radians => radians * 180 / PI,
-  to: (strn, unit) => {
+  to: (strn, unit) => { // convert strn to the new unit (ex: convert.to('1M', 'B') return .001)
     // bring back to kilometers
     let nKm = toKm(strn);
     if (!unit) return nKm;
-    if (unit.includes('parsec') || unit.includes('pc')) nKm /= uv.parsecs;
-    else if (unit.includes('m') || unit.includes('meter')) nKm /= uv.meter;
-    else if (unit.includes('M') || unit.includes('million')) nKm /= uv.million;
-    else if (unit.includes('B') || unit.includes('billion')) nKm /= uv.billion;
-    else if (unit.includes('ly') || unit.includes('LY')) nKm /= uv.ly;
-    else if (unit.includes('au') || unit.includes('AU')) nKm /= uv.au;
+    if (unit.includes('parsec') || unit.includes('pc')) return nKm /= uv.parsecs;
+    else if (unit.includes('meter')) return nKm /= uv.meter;
+    else if (unit.includes('million')) return nKm /= uv.million;
+    else if (unit.includes('B') || unit.includes('billion')) return nKm /= uv.billion;
+    else if (unit.includes('ly') || unit.includes('LY')) return nKm /= uv.ly;
+    else if (unit.includes('au') || unit.includes('AU')) return nKm /= uv.au;
 
     return nKm;
   }
 };
+
+const expoDisplay = (num) => {
+  const n = num * 60 * 60;
+
+  if(n < 1) return `${Math.floor(convert.to(n, 'mettre') * 100) / 100}mettre`;
+  if(n >= 1
+    && n < 1000) return `${Math.floor(convert.to(n) * 100) / 100}km`;
+  if(n >= 1000
+    && n < 1000000000) return `${Math.floor(convert.to(n, 'million') * 100) / 100}MillionKm`;
+  if(n >= 1000000000
+    && n < 9461000000000) return `${Math.floor(convert.to(n, 'billion') * 100) / 100}BillionKm`;
+  if(n >= 9461000000000) return `${Math.floor(convert.to(n, 'LY') * 100) / 100}LY`;
+  return n
+}
+
+// console.log(expoDisplay(.1512347875))
+// console.log(expoDisplay(1.512347875))
+// console.log(expoDisplay(12.512347875))
+// console.log(expoDisplay(123.512347875))
+// console.log(expoDisplay(1234.51258765425))
+// console.log(expoDisplay(12341.51258765425))
+// console.log(expoDisplay(123412.51258765425))
+// console.log(expoDisplay(1234124.51258765425))
+// console.log(expoDisplay(12341245.51258765425))
+// console.log(expoDisplay(123456789.5124245))
+// console.log(expoDisplay(12345678901.5124245))
+// console.log(expoDisplay(123456789012.511122545))
+// console.log(expoDisplay(1234567890123.511122545))
+// console.log(expoDisplay(12345678901234.511122545))
+// console.log(expoDisplay(123456789012345.511122545))
+// console.log(expoDisplay(1234567890123456.511122545))
+// console.log(expoDisplay(12345678901234567.511122545))
+// console.log(expoDisplay(123456789012345678.511122545))
+// console.log(expoDisplay(1234567890123456789.511122545))
+// console.log(expoDisplay(12345678901234567890.511122545))
 
 // return aproximately n more or less percentage
 const aprox = (n, percentage) => {

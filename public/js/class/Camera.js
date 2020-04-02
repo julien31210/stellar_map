@@ -141,7 +141,10 @@ class Camera extends THREE.PerspectiveCamera {
       && this.mouseOvers[0].object
       && this.mouseOvers[0].object.parent
       && this.mouseOvers[0].object.parent.isAstre
-    ) openWindow(this.mouseOvers[0].object.parent);
+    ) {
+      const window = openWindow(this.mouseOvers[0].object.parent);
+      sceneHUD.add(window);
+    }
 
     if (this.menuMouseOvers[0]) {
       console.log(this.menuMouseOvers[0].object);
@@ -201,6 +204,10 @@ class Camera extends THREE.PerspectiveCamera {
     this.crossAir.position.set(0, 0, -3);
 
     this.crossAirRotationCenter.add(this.crossAir);
+
+    this.speedDisplay = openVarDisplayer({ width: 256, height: 256, offsety: -1, offsetz: -3, text: '' })
+
+    this.crossAir.add(this.speedDisplay);
 
     this.add(this.crossAirRotationCenter);
 
@@ -279,6 +286,13 @@ class Camera extends THREE.PerspectiveCamera {
   }
 
   animate(delta) {
+
+    updateVarDisplayer({
+      displayer: this.speedDisplay,
+      width: 256, height: 256,
+      text: `${expoDisplay(this.autoSpeedToggled ? this.autoSpeed : mouseWheelSpeed)}/h`
+    });
+
     this.isLocked = document.pointerLockElement === document.getElementById('blocker');
     const cliped = this.clipedTo;
     if (cliped && cliped.radius * 10 < cliped.getDistanceTo(this)) this.unClip();
