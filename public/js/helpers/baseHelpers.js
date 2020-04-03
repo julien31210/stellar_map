@@ -70,14 +70,14 @@ const convert = {
 const expoDisplay = (num) => {
   const n = num * 60 * 60;
 
-  if(n < 1) return `${Math.floor(convert.to(n, 'mettre') * 100) / 100}mettre`;
+  if(n < 1) return `${Math.floor(convert.to(n, 'mettre') * 100) / 100} mettre`;
   if(n >= 1
-    && n < 1000) return `${Math.floor(convert.to(n) * 100) / 100}km`;
-  if(n >= 1000
-    && n < 1000000000) return `${Math.floor(convert.to(n, 'million') * 100) / 100}MillionKm`;
+    && n < 1000000) return `${Math.floor(convert.to(n) * 100) / 100} km`;
+  if(n >= 1000000
+    && n < 1000000000) return `${Math.floor(convert.to(n, 'million') * 100) / 100} MillionKm`;
   if(n >= 1000000000
-    && n < 9461000000000) return `${Math.floor(convert.to(n, 'billion') * 100) / 100}BillionKm`;
-  if(n >= 9461000000000) return `${Math.floor(convert.to(n, 'LY') * 100) / 100}LY`;
+    && n < 9461000000000) return `${Math.floor(convert.to(n, 'billion') * 100) / 100} BillionKm`;
+  if(n >= 9461000000000) return `${Math.floor(convert.to(n, 'LY') * 100) / 100} LY`;
   return n
 }
 
